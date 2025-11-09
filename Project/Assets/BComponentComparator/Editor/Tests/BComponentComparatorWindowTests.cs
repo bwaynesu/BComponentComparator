@@ -5,21 +5,21 @@ using UnityEngine.UIElements;
 using UnityEngine.TestTools;
 using System.Collections;
 
-namespace ComponentComparator.Editor.Tests
+namespace BComponentComparator.Editor.Tests
 {
     /// <summary>
-    /// Tests for ComponentComparatorWindow
+    /// Tests for BComponentComparatorWindow
     /// </summary>
-    public class ComponentComparatorWindowTests
+    public class BComponentComparatorWindowTests
     {
-        private ComponentComparatorWindow window;
+        private BComponentComparatorWindow window;
 
         [SetUp]
         public void SetUp()
         {
             // Open window for testing
-            ComponentComparatorWindow.ShowWindow();
-            window = EditorWindow.GetWindow<ComponentComparatorWindow>();
+            BComponentComparatorWindow.ShowWindow();
+            window = EditorWindow.GetWindow<BComponentComparatorWindow>();
         }
 
         [TearDown]
@@ -36,7 +36,7 @@ namespace ComponentComparator.Editor.Tests
         {
             // Assert
             Assert.IsNotNull(window);
-            Assert.IsTrue(window.titleContent.text.Contains("Component Comparator"));
+            Assert.IsTrue(window.titleContent.text.Contains("BComponentComparator"));
         }
 
         [Test]

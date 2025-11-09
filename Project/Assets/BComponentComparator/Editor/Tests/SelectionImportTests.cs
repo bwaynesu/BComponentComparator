@@ -3,14 +3,14 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace ComponentComparator.Editor.Tests
+namespace BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for Selection Import functionality
     /// </summary>
     public class SelectionImportTests
     {
-        private ComponentComparatorWindow window;
+        private BComponentComparatorWindow window;
         private GameObject testObject1;
         private GameObject testObject2;
         private GameObject testObjectWithoutComponent;
@@ -19,7 +19,7 @@ namespace ComponentComparator.Editor.Tests
         public void SetUp()
         {
             // Open window
-            window = EditorWindow.GetWindow<ComponentComparatorWindow>();
+            window = EditorWindow.GetWindow<BComponentComparatorWindow>();
             window.CreateGUI();
 
             // Create test objects

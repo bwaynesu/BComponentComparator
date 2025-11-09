@@ -1,7 +1,7 @@
 /* Component Comparator Window Styles */
 
 /* Root Container */
-.component-comparator-window {
+.b-component-comparator-window {
     flex-direction: row;
     flex-grow: 1;
 }

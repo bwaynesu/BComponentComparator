@@ -2,7 +2,7 @@ using NUnit.Framework;
 using UnityEngine;
 using UnityEditor;
 
-namespace ComponentComparator.Editor.Tests
+namespace BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for ComparisonItem data model

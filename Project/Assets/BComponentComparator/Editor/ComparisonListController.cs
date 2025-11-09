@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace ComponentComparator.Editor
+namespace BComponentComparator.Editor
 {
     /// <summary>
     /// Controller for managing the comparison list (left panel).

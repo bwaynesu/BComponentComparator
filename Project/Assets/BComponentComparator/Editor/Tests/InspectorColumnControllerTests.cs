@@ -4,7 +4,7 @@ using UnityEditor;
 using System.Collections.Generic;
 using UnityEngine.UIElements;
 
-namespace ComponentComparator.Editor.Tests
+namespace BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for InspectorColumnController

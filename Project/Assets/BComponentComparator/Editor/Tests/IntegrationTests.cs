@@ -3,14 +3,14 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace ComponentComparator.Editor.Tests
+namespace BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Integration tests for end-to-end workflow
     /// </summary>
     public class IntegrationTests
     {
-        private ComponentComparatorWindow window;
+        private BComponentComparatorWindow window;
         private GameObject testObject1;
         private GameObject testObject2;
         private GameObject testObject3;
@@ -18,7 +18,7 @@ namespace ComponentComparator.Editor.Tests
         [SetUp]
         public void SetUp()
         {
-            window = EditorWindow.GetWindow<ComponentComparatorWindow>();
+            window = EditorWindow.GetWindow<BComponentComparatorWindow>();
             window.CreateGUI();
 
             testObject1 = new GameObject("TestObject1");

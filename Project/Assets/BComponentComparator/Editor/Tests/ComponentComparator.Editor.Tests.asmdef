@@ -1,10 +1,10 @@
 {
-    "name": "ComponentComparator.Editor.Tests",
-    "rootNamespace": "ComponentComparator.Editor.Tests",
+    "name": "BComponentComparator.Editor.Tests",
+    "rootNamespace": "BComponentComparator.Editor.Tests",
     "references": [
         "UnityEngine.TestRunner",
         "UnityEditor.TestRunner",
-        "ComponentComparator.Editor"
+        "BComponentComparator.Editor"
     ],
     "includePlatforms": [
         "Editor"

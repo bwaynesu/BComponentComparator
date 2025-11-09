@@ -4,13 +4,13 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ComponentComparator.Editor
+namespace BComponentComparator.Editor
 {
     /// <summary>
     /// Main EditorWindow for Component Comparator tool.
     /// Provides UI to specify Component type, build comparison list, and view side-by-side Inspectors.
     /// </summary>
-    public class ComponentComparatorWindow : EditorWindow
+    public class BComponentComparatorWindow : EditorWindow
     {
         // --- Fields ---
         private Type currentComponentType;
@@ -24,11 +24,11 @@ namespace ComponentComparator.Editor
         private Button clearListButton;
 
         // --- EditorWindow Menu Item ---
-        [MenuItem("Window/Component Comparator")]
+        [MenuItem("Window/BTools/BComponentComparator")]
         public static void ShowWindow()
         {
-            ComponentComparatorWindow window = GetWindow<ComponentComparatorWindow>();
-            window.titleContent = new GUIContent("Component Comparator");
+            BComponentComparatorWindow window = GetWindow<BComponentComparatorWindow>();
+            window.titleContent = new GUIContent("BComponentComparator");
             window.minSize = new Vector2(800, 400);
         }
 
@@ -38,7 +38,7 @@ namespace ComponentComparator.Editor
             // Load USS stylesheet using relative path from script location
             var scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
             var scriptDirectory = System.IO.Path.GetDirectoryName(scriptPath);
-            var styleSheetPath = System.IO.Path.Combine(scriptDirectory, "Styles", "ComponentComparatorWindow.uss");
+            var styleSheetPath = System.IO.Path.Combine(scriptDirectory, "Styles", "BComponentComparatorWindow.uss");
             styleSheetPath = styleSheetPath.Replace("\\", "/"); // Normalize path separators
             
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(styleSheetPath);
@@ -49,7 +49,7 @@ namespace ComponentComparator.Editor
 
             // Create split view layout
             splitView = new TwoPaneSplitView(0, 250, TwoPaneSplitViewOrientation.Horizontal);
-            splitView.AddToClassList("component-comparator-window");
+            splitView.AddToClassList("b-component-comparator-window");
             rootVisualElement.Add(splitView);
 
             // Create left panel (control area)

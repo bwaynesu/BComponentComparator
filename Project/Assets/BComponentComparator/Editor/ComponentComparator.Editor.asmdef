@@ -1,6 +1,6 @@
 {
-    "name": "ComponentComparator.Editor",
-    "rootNamespace": "ComponentComparator.Editor",
+    "name": "BComponentComparator.Editor",
+    "rootNamespace": "BComponentComparator.Editor",
     "references": [],
     "includePlatforms": [
         "Editor"

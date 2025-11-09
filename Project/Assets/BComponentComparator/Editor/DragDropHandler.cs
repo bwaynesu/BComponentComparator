@@ -3,7 +3,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ComponentComparator.Editor
+namespace BComponentComparator.Editor
 {
     /// <summary>
     /// Static utility class for handling drag-drop operations and validation.

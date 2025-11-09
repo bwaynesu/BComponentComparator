@@ -5,7 +5,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace ComponentComparator.Editor
+namespace BComponentComparator.Editor
 {
     /// <summary>
     /// Controller for managing Inspector columns (right panel).
