@@ -63,27 +63,6 @@ namespace BComponentComparator.Editor
 
             // Register drag-drop and event handlers
             RegisterEventHandlers();
-            
-            // Monitor geometry changes (e.g., window docking) to re-register callbacks
-            rootVisualElement.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-        }
-        
-        private void OnGeometryChanged(GeometryChangedEvent evt)
-        {
-            // Re-register drag-drop callbacks when window is docked/undocked
-            if (componentTypeField != null)
-            {
-                DragDropHandler.RegisterDragDropCallbacks(
-                    componentTypeField,
-                    obj => DragDropHandler.ValidateComponentType(obj, out _),
-                    OnComponentTypeDrop
-                );
-            }
-            
-            if (currentComponentType != null && listController != null)
-            {
-                listController.RefreshDragDropCallbacks();
-            }
         }
 
         private void CreateLeftPanel()
@@ -99,59 +78,28 @@ namespace BComponentComparator.Editor
             componentTypeField.Add(componentTypeLabel);
             leftPanel.Add(componentTypeField);
 
-            // Column width controls
-            var widthSliderContainer = new VisualElement();
-            widthSliderContainer.style.marginTop = 5;
-            widthSliderContainer.style.marginBottom = 5;
-            
-            // Label and input field row
-            var widthInputRow = new VisualElement();
-            widthInputRow.style.flexDirection = FlexDirection.Row;
-            widthInputRow.style.alignItems = Align.Center;
-            widthInputRow.style.marginBottom = 3;
+            // Column width controls - label and slider in one row
+            var widthRow = new VisualElement();
+            widthRow.AddToClassList("width-control-row");
             
             var widthLabel = new Label("Inspector Width:");
-            widthLabel.style.marginRight = 5;
-            widthInputRow.Add(widthLabel);
+            widthLabel.AddToClassList("width-label");
+            widthRow.Add(widthLabel);
             
-            var widthField = new IntegerField();
-            widthField.value = 300;
-            widthField.style.width = 60;
-            widthInputRow.Add(widthField);
-            
-            widthSliderContainer.Add(widthInputRow);
-            
-            // Slider
             var widthSlider = new SliderInt(200, 600) { value = 300 };
-            widthSlider.style.flexGrow = 1;
-            widthSliderContainer.Add(widthSlider);
+            widthSlider.AddToClassList("width-slider");
+            widthRow.Add(widthSlider);
             
-            // Sync on Enter key for field (avoid immediate clamping)
-            widthField.RegisterCallback<KeyDownEvent>(evt =>
-            {
-                if (evt.keyCode == KeyCode.Return || evt.keyCode == KeyCode.KeypadEnter)
-                {
-                    int clampedValue = Math.Max(200, Math.Min(600, widthField.value));
-                    widthField.value = clampedValue;
-                    widthSlider.SetValueWithoutNotify(clampedValue);
-                    if (inspectorController != null)
-                    {
-                        inspectorController.SetColumnWidth(clampedValue);
-                    }
-                }
-            });
-            
-            // Slider updates field and width immediately
+            // Slider updates inspector width
             widthSlider.RegisterValueChangedCallback(evt =>
             {
-                widthField.SetValueWithoutNotify(evt.newValue);
                 if (inspectorController != null)
                 {
                     inspectorController.SetColumnWidth(evt.newValue);
                 }
             });
             
-            leftPanel.Add(widthSliderContainer);
+            leftPanel.Add(widthRow);
 
             // List view placeholder (will be created by ComparisonListController)
             var listPlaceholder = new VisualElement();
@@ -264,12 +212,6 @@ namespace BComponentComparator.Editor
 
         private void UnregisterEventHandlers()
         {
-            // Unregister geometry change callback
-            if (rootVisualElement != null)
-            {
-                rootVisualElement.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            }
-            
             // Unregister drag-drop
             if (componentTypeField != null)
             {

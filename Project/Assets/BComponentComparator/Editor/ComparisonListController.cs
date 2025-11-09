@@ -136,17 +136,6 @@ namespace BComponentComparator.Editor
         }
 
         /// <summary>
-        /// Refresh drag-drop callbacks (useful when window is re-docked)
-        /// </summary>
-        public void RefreshDragDropCallbacks()
-        {
-            if (requiredType != null)
-            {
-                RegisterDragDropCallbacks();
-            }
-        }
-        
-        /// <summary>
         /// Set the required Component/asset type for validation
         /// </summary>
         public void SetRequiredType(Type type)

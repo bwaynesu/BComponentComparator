@@ -38,6 +38,24 @@
     border-width: 2px;
 }
 
+/* Width Control Row */
+.width-control-row {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 12px;
+    margin-left: 1px;
+    margin-right: 1px;
+}
+
+.width-label {
+    margin-right: 5px;
+}
+
+.width-slider {
+    flex-grow: 1;
+}
+
 /* Button Container */
 .button-container {
     flex-direction: column;
