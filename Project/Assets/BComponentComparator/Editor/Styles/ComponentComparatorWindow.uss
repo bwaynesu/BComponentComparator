@@ -1,0 +1,176 @@
+/* Component Comparator Window Styles */
+
+/* Root Container */
+.component-comparator-window {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+/* Left Panel - Control Area */
+.control-panel {
+    min-width: 250px;
+    background-color: rgb(56, 56, 56);
+    border-right-width: 1px;
+    border-right-color: rgb(35, 35, 35);
+    padding: 10px;
+}
+
+/* Component Type Field */
+.component-type-field {
+    height: 30px;
+    background-color: rgb(42, 42, 42);
+    border-width: 1px;
+    border-color: rgb(28, 28, 28);
+    border-radius: 3px;
+    padding: 5px;
+    margin-bottom: 10px;
+    align-items: center;
+    justify-content: center;
+}
+
+.component-type-field:hover {
+    border-color: rgb(58, 121, 187);
+}
+
+.component-type-field.drag-hover {
+    background-color: rgba(58, 121, 187, 0.2);
+    border-color: rgb(58, 121, 187);
+    border-width: 2px;
+}
+
+/* Button Container */
+.button-container {
+    flex-direction: column;
+    margin-top: 5px;
+}
+
+.button-container Button {
+    margin-top: 5px;
+    height: 28px;
+}
+
+/* List View */
+.comparison-list {
+    flex-grow: 1;
+    background-color: rgb(42, 42, 42);
+    border-width: 1px;
+    border-color: rgb(28, 28, 28);
+    border-radius: 3px;
+}
+
+.list-item {
+    flex-direction: row;
+    align-items: center;
+    padding: 5px;
+    height: 30px;
+}
+
+.list-item:hover {
+    background-color: rgb(62, 62, 62);
+}
+
+.list-item:selected {
+    background-color: rgb(44, 93, 135);
+}
+
+.list-item Label {
+    flex-grow: 1;
+    -unity-text-align: middle-left;
+}
+
+/* Right Panel - Comparison View */
+.comparison-panel {
+    flex-grow: 1;
+    background-color: rgb(48, 48, 48);
+}
+
+.comparison-scroll-view {
+    flex-grow: 1;
+}
+
+.inspector-columns-container {
+    flex-direction: row;
+    align-items: flex-start;
+}
+
+/* Inspector Column */
+.inspector-column {
+    width: 300px;
+    min-width: 300px;
+    background-color: rgb(56, 56, 56);
+    border-width: 1px;
+    border-color: rgb(35, 35, 35);
+    border-radius: 3px;
+    margin: 5px;
+    padding: 5px;
+}
+
+.inspector-column-header {
+    height: 30px;
+    background-color: rgb(42, 42, 42);
+    padding-left: 8px;
+    padding-right: 8px;
+    margin-bottom: 5px;
+    border-radius: 3px;
+    -unity-font-style: bold;
+}
+
+.inspector-column-header-label {
+    -unity-text-align: middle-left;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.inspector-column-header-selected {
+    background-color: rgb(44, 93, 135);
+}
+
+/* Remove Button */
+.remove-button {
+    background-color: transparent;
+    border-width: 0;
+    font-size: 16px;
+    color: rgb(180, 180, 180);
+    padding: 0;
+    margin: 0;
+    -unity-text-align: middle-center;
+}
+
+.remove-button:hover {
+    color: rgb(255, 100, 100);
+    background-color: rgba(255, 100, 100, 0.1);
+}
+
+.remove-button:active {
+    color: rgb(255, 50, 50);
+    background-color: rgba(255, 100, 100, 0.2);
+}
+
+.inspector-content {
+    flex-grow: 1;
+}
+
+/* Empty State */
+.empty-state {
+    flex-grow: 1;
+    align-items: center;
+    justify-content: center;
+    color: rgb(153, 153, 153);
+}
+
+.empty-state Label {
+    margin-top: 10px;
+    font-size: 14px;
+}
+
+/* Drag Feedback */
+.drag-hover {
+    background-color: rgba(58, 121, 187, 0.2);
+    border-color: rgb(58, 121, 187);
+}
+
+.drag-rejected {
+    background-color: rgba(187, 58, 58, 0.2);
+    border-color: rgb(187, 58, 58);
+}
