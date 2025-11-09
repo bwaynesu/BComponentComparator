@@ -63,6 +63,27 @@ namespace BComponentComparator.Editor
 
             // Register drag-drop and event handlers
             RegisterEventHandlers();
+            
+            // Monitor geometry changes (e.g., window docking) to re-register callbacks
+            rootVisualElement.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+        }
+        
+        private void OnGeometryChanged(GeometryChangedEvent evt)
+        {
+            // Re-register drag-drop callbacks when window is docked/undocked
+            if (componentTypeField != null)
+            {
+                DragDropHandler.RegisterDragDropCallbacks(
+                    componentTypeField,
+                    obj => DragDropHandler.ValidateComponentType(obj, out _),
+                    OnComponentTypeDrop
+                );
+            }
+            
+            if (currentComponentType != null && listController != null)
+            {
+                listController.RefreshDragDropCallbacks();
+            }
         }
 
         private void CreateLeftPanel()
@@ -243,6 +264,12 @@ namespace BComponentComparator.Editor
 
         private void UnregisterEventHandlers()
         {
+            // Unregister geometry change callback
+            if (rootVisualElement != null)
+            {
+                rootVisualElement.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            }
+            
             // Unregister drag-drop
             if (componentTypeField != null)
             {
