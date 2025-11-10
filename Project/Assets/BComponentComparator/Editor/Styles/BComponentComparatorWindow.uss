@@ -76,6 +76,14 @@
     border-radius: 3px;
 }
 
+.comparison-list .unity-list-view__reorderable-handle {
+    display: none;
+}
+
+.comparison-list .unity-list-view__reorderable-item__container {
+    padding: 0;
+}
+
 .list-item {
     flex-direction: row;
     align-items: center;

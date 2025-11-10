@@ -43,12 +43,15 @@ namespace BComponentComparator.Editor
             listView.style.flexGrow = 1;
             listView.selectionType = SelectionType.Multiple;
             listView.reorderable = true;
+            listView.reorderMode = ListViewReorderMode.Animated;
+            listView.virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight;
 
             // Set up ListView callbacks
             listView.makeItem = MakeItem;
             listView.bindItem = BindItem;
             listView.itemsSource = items;
             listView.selectionChanged += OnSelectionChanged;
+            listView.itemIndexChanged += OnItemIndexChanged;
 
             // Insert at specific index or add to end
             if (insertIndex >= 0 && insertIndex < container.childCount)
@@ -93,6 +96,15 @@ namespace BComponentComparator.Editor
 
             // Notify for Inspector highlight update
             OnSelectionChangedEvent?.Invoke(selectedObjects);
+        }
+        
+        /// <summary>
+        /// Handle ListView item reorder
+        /// </summary>
+        private void OnItemIndexChanged(int oldIndex, int newIndex)
+        {
+            // Notify that list order has changed
+            OnItemsChanged?.Invoke();
         }
 
         /// <summary>
@@ -295,6 +307,7 @@ namespace BComponentComparator.Editor
             {
                 DragDropHandler.UnregisterDragDropCallbacks(listView);
                 listView.selectionChanged -= OnSelectionChanged;
+                listView.itemIndexChanged -= OnItemIndexChanged;
             }
 
             // Dispose all items
@@ -380,9 +393,23 @@ namespace BComponentComparator.Editor
             var removeButton = element.Q<Button>();
             if (removeButton != null)
             {
-                // Remove old click handlers to avoid duplicates
+                // Store the item reference to find correct index when clicked
+                var currentItem = items[index];
+                
+                // Remove all previous click handlers
+                var clickEvent = new System.Action(() =>
+                {
+                    // Find current index of the item (in case list was reordered)
+                    int currentIndex = items.IndexOf(currentItem);
+                    if (currentIndex >= 0)
+                    {
+                        RemoveItem(currentIndex);
+                    }
+                });
+                
+                // Clear old handlers and add new one
                 removeButton.clicked -= () => { };
-                removeButton.clicked += () => RemoveItem(index);
+                removeButton.clicked += clickEvent;
             }
         }
     }
