@@ -12,6 +12,11 @@ namespace BComponentComparator.Editor
     /// </summary>
     public class BComponentComparatorWindow : EditorWindow
     {
+        // --- Serialized Fields (persist across recompilation) ---
+        [SerializeField] private string componentTypeAssemblyQualifiedName;
+        [SerializeField] private List<UnityEngine.Object> serializedObjects = new List<UnityEngine.Object>();
+        [SerializeField] private int inspectorWidth = 300;
+        
         // --- Fields ---
         private Type currentComponentType;
         private ComparisonListController listController;
@@ -22,6 +27,7 @@ namespace BComponentComparator.Editor
         private VisualElement componentTypeField;
         private Label componentTypeLabel;
         private Button clearListButton;
+        private SliderInt widthSlider;
 
         // --- EditorWindow Menu Item ---
         [MenuItem("Window/BTools/BComponentComparator")]
@@ -66,6 +72,9 @@ namespace BComponentComparator.Editor
             
             // Monitor geometry changes (e.g., window docking) to re-register callbacks
             rootVisualElement.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
+            
+            // Restore state after UI is built
+            RestoreState();
         }
         
         private void OnGeometryChanged(GeometryChangedEvent evt)
@@ -107,13 +116,14 @@ namespace BComponentComparator.Editor
             widthLabel.AddToClassList("width-label");
             widthRow.Add(widthLabel);
             
-            var widthSlider = new SliderInt(200, 600) { value = 300 };
+            widthSlider = new SliderInt(200, 600) { value = 300 };
             widthSlider.AddToClassList("width-slider");
             widthRow.Add(widthSlider);
             
             // Slider updates inspector width
             widthSlider.RegisterValueChangedCallback(evt =>
             {
+                inspectorWidth = evt.newValue;
                 if (inspectorController != null)
                 {
                     inspectorController.SetColumnWidth(evt.newValue);
@@ -275,6 +285,9 @@ namespace BComponentComparator.Editor
 
                 // Enable buttons
                 ValidateButtonStates();
+                
+                // Save state
+                SaveState();
             }
         }
 
@@ -283,6 +296,7 @@ namespace BComponentComparator.Editor
             if (listController != null && listController.GetItems().Count > 0)
             {
                 listController.ClearItems();
+                SaveState();
             }
         }
 
@@ -294,6 +308,7 @@ namespace BComponentComparator.Editor
             }
 
             ValidateButtonStates();
+            SaveState();
         }
 
         private void OnListSelectionChanged(List<UnityEngine.Object> selectedObjects)
@@ -308,6 +323,75 @@ namespace BComponentComparator.Editor
         {
             bool hasItems = listController != null && listController.GetItems().Count > 0;
             clearListButton?.SetEnabled(hasItems);
+        }
+        
+        private void SaveState()
+        {
+            // Save component type
+            componentTypeAssemblyQualifiedName = currentComponentType?.AssemblyQualifiedName;
+            
+            // Save objects from list
+            serializedObjects.Clear();
+            if (listController != null)
+            {
+                var items = listController.GetItems();
+                foreach (var item in items)
+                {
+                    if (item.IsValid())
+                    {
+                        serializedObjects.Add(item.TargetObject);
+                    }
+                }
+            }
+        }
+        
+        private void RestoreState()
+        {
+            // Restore component type
+            if (!string.IsNullOrEmpty(componentTypeAssemblyQualifiedName))
+            {
+                currentComponentType = Type.GetType(componentTypeAssemblyQualifiedName);
+                if (currentComponentType != null)
+                {
+                    componentTypeLabel.text = currentComponentType.Name;
+                    componentTypeLabel.style.color = Color.white;
+                    
+                    if (listController != null)
+                    {
+                        listController.SetRequiredType(currentComponentType);
+                    }
+                }
+            }
+            
+            // Restore inspector width
+            if (widthSlider != null && inspectorWidth != 300)
+            {
+                widthSlider.SetValueWithoutNotify(inspectorWidth);
+                if (inspectorController != null)
+                {
+                    inspectorController.SetColumnWidth(inspectorWidth);
+                }
+            }
+            
+            // Restore objects
+            if (serializedObjects != null && serializedObjects.Count > 0 && currentComponentType != null && listController != null)
+            {
+                var validObjects = new List<UnityEngine.Object>();
+                foreach (var obj in serializedObjects)
+                {
+                    if (obj != null && DragDropHandler.ValidateObject(obj, currentComponentType))
+                    {
+                        validObjects.Add(obj);
+                    }
+                }
+                
+                if (validObjects.Count > 0)
+                {
+                    listController.AddItems(validObjects);
+                }
+            }
+            
+            ValidateButtonStates();
         }
 
         public void OnEnable()

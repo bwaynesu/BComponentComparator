@@ -16,6 +16,7 @@ A Unity Editor tool for comparing multiple Components, ScriptableObjects, or Mat
 - **Multi-Selection Sync**: Select multiple items in the list to highlight them in the Unity Editor
 - **Adjustable Column Width**: Customize Inspector column width using a slider (200-600 pixels)
 - **Persistent After Docking**: Drag-and-drop functionality remains stable when moving or docking the window
+- **State Persistence**: Automatically saves and restores your comparison setup (component type, objects, and settings) across editor recompilation.
 
 ## Installation
 
@@ -80,6 +81,7 @@ A Unity Editor tool for comparing multiple Components, ScriptableObjects, or Mat
 - **Quality Control**: Quickly spot inconsistencies in Component settings
 - **Data Migration**: Copy settings from one object to many others using native copy/paste
 - **Custom Inspectors**: Fully supports custom Inspector drawers and property drawers
+- **Survives Recompilation**: Your comparison setup (component type, objects list, and inspector width) automatically persists across script recompilation
 
 ## Known Limitations
 
