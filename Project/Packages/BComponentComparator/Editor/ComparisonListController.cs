@@ -117,6 +117,12 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
+            // If GameObject, extract the required Component
+            if (obj is GameObject go)
+            {
+                obj = go.GetComponent(requiredType);
+            }
+
             // Check for duplicates
             if (items.Exists(item => item.TargetObject == obj))
             {
@@ -151,14 +157,22 @@ namespace BTools.BComponentComparator.Editor
             var anyAdded = false;
             foreach (var obj in objects)
             {
-                if (obj == null || items.Exists(item => item.TargetObject == obj))
+                var curObj = obj;
+
+                // If GameObject, extract the required Component
+                if (curObj is GameObject go)
+                {
+                    curObj = go.GetComponent(requiredType);
+                }
+
+                if (curObj == null || items.Exists(item => item.TargetObject == curObj))
                 {
                     continue;
                 }
 
                 try
                 {
-                    var comparisonItem = new ComparisonItem(obj, requiredType);
+                    var comparisonItem = new ComparisonItem(curObj, requiredType);
                     items.Add(comparisonItem);
                     anyAdded = true;
                 }

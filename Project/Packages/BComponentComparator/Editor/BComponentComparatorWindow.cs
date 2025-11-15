@@ -310,6 +310,9 @@ namespace BTools.BComponentComparator.Editor
             // Set required type for list controller
             listController?.SetRequiredType(componentType);
 
+            // Add dropped object to list
+            listController?.AddItem(droppedObject);
+
             // Enable buttons
             ValidateButtonStates();
 
