@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/bwaynesu/BComponentComparator/compare/1.0.0...1.0.1) (2025-11-15)
+
+
+### Bug Fixes
+
+* **config:** wrong path in release.yml ([b4f5a1f](https://github.com/bwaynesu/BComponentComparator/commit/b4f5a1f9cfe57a4d9a3687e413c966f3147c1a12))
+
 # 1.0.0 (2025-11-15)
 
 
