@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/bwaynesu/BComponentComparator/compare/1.0.1...1.0.2) (2025-11-15)
+
+
+### Bug Fixes
+
+* unitypackage export path without project folder ([3e96dfb](https://github.com/bwaynesu/BComponentComparator/commit/3e96dfbf16352e276e47a98ad4416cbd69aaf79a))
+
 ## [1.0.1](https://github.com/bwaynesu/BComponentComparator/compare/1.0.0...1.0.1) (2025-11-15)
 
 

@@ -2,7 +2,7 @@
   "name": "com.bwaynesu.btools.bcomponentcomparator",
   "displayName": "BComponentComparator",
   "description": "A Unity Editor tool for comparing multiple Unity objects side-by-side in a single window. Supports GameObjects, Components, ScriptableObjects, Materials, Textures, Audio Clips, and more with full Inspector editing capabilities.",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "unity": "2022.3",
   "keywords": [
     "editor",
