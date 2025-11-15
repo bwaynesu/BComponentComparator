@@ -6,7 +6,31 @@
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) 
 [![Twitter](https://img.shields.io/twitter/follow/bwaynesu.svg?label=Follow&style=social)](https://x.com/intent/follow?screen_name=bwaynesu)
 
-A Unity Editor tool for comparing multiple Unity objects side-by-side in a single window.
+**Stop switching between Inspector windows.**   
+Compare and edit multiple Unity objects side-by-side, spot inconsistencies instantly, and maintain quality across your entire project — all in a single, synchronized view.
+
+<img width="700" alt="Preview" src="https://github.com/user-attachments/assets/05294e56-962d-4598-9ddb-dbe10c4963f0" />
+
+## Why BComponentComparator?
+
+Ever found yourself:
+- Clicking between dozens of GameObjects to check if their settings match?
+- Copy-pasting Component values one by one across multiple objects?
+- Missing subtle differences in Material properties that break visual consistency?
+- Wishing you could see all your ScriptableObject data side-by-side?
+
+**Unity's Inspector shows one object at a time. Your workflow shouldn't be limited by that.**
+
+BComponentComparator gives you a parallel view of multiple Inspectors, letting you compare, edit, and synchronize objects effortlessly — saving hours of tedious clicking and ensuring nothing slips through the cracks.
+
+## How It Works
+
+**Simple drag-and-drop workflow:**
+1. Drag any Component or asset to define what you want to compare
+2. Drag your objects into the list
+3. View and edit all Inspectors side-by-side with full Unity editing support
+
+Native Inspector rendering means everything just works — Undo/Redo, Copy/Paste, Custom Inspectors, and all field types.
 
 ## Features
 
@@ -20,14 +44,32 @@ A Unity Editor tool for comparing multiple Unity objects side-by-side in a singl
   - All field types and widgets
 - **Reorderable List**: Drag items in the list to reorder, with Inspector columns updating in real-time
 - **Multi-Selection Sync**: Select multiple items in the list to highlight them in the Unity Editor
-- **Adjustable Column Width**: Customize Inspector column width using a slider (200-600 pixels)
-- **Persistent After Docking**: Drag-and-drop functionality remains stable when moving or docking the window
-- **State Persistence**: Automatically saves and restores your comparison setup (component type, objects, and settings) across editor recompilation.
+- **Adjustable Column Width**: Customize Inspector column width using a slider
+
+## Real-World Use Cases
+
+### Level Design Quality Control
+Compare dozens of enemy spawners or interactive objects to ensure consistent difficulty curves and behavior settings across your game.
+
+### Visual Consistency
+Line up all your Materials side-by-side to verify shader parameters, texture assignments, and rendering settings match your art direction.
+
+### Data-Driven Development
+Review multiple ScriptableObject configurations simultaneously — perfect for balancing game items, character stats, or ability definitions.
+
+### Bulk Configuration
+Copy-paste Component values across multiple objects in seconds instead of minutes, then fine-tune individual differences with immediate visual feedback.
 
 ## Installation
 
-1. Copy the `BComponentComparator` folder into your project's `Assets` directory
-2. The tool will be available under `Window > BTools > BComponentComparator`
+1. **Unity Package Manager**
+    - Open `Window` > `Package Manager`
+    - Click `+` > `Install package from git URL...`
+    - Enter: `https://github.com/bwaynesu/BComponentComparator.git?path=Project/Packages/BComponentComparator`
+
+2. **Manual Installation**
+    - Download the latest `.unitypackage` from the [Releases](https://github.com/bwaynesu/BComponentComparator/releases) page
+    - In Unity, double-click the `.unitypackage` or use `Assets > Import Package > Custom Package...` to import
 
 ## Usage
 
@@ -62,7 +104,6 @@ A Unity Editor tool for comparing multiple Unity objects side-by-side in a singl
 
 #### Adjusting Column Width
 - Use the "Inspector Width" slider to adjust all column widths simultaneously
-- Range: 200-600 pixels
 
 #### Removing Items
 - Hover over a list item to reveal the × button, click to remove
@@ -86,15 +127,6 @@ A Unity Editor tool for comparing multiple Unity objects side-by-side in a singl
 - Unity 2022.3 LTS or later
 - UI Toolkit support
 
-## Tips
-
-- **Use for Bulk Editing**: Compare and adjust properties across multiple objects efficiently
-- **Quality Control**: Quickly spot inconsistencies in object settings
-- **Data Migration**: Copy settings from one object to many others using native copy/paste
-- **Asset Management**: Compare textures, materials, audio settings, and other assets side-by-side
-- **Custom Inspectors**: Fully supports custom Inspector drawers and property drawers
-- **Survives Recompilation**: Your comparison setup (object type, objects list, and inspector width) automatically persists across script recompilation
-
 ## Known Limitations
 
 - Prefab assets are not supported (use Prefab instances in the scene instead)
@@ -102,4 +134,27 @@ A Unity Editor tool for comparing multiple Unity objects side-by-side in a singl
 
 ## License
 
-See [LICENSE](LICENSE) file for details.
+This project is under the [MIT License](LICENSE).
+
+## Author
+
+- [bwaynesu](https://bwaynesu.github.io/portfolio/) 
+
+## Links
+
+- [Repository](https://github.com/bwaynesu/BComponentComparator)
+- [Releases](https://github.com/bwaynesu/BComponentComparator/releases)
+- [Issues](https://github.com/bwaynesu/BComponentComparator/issues)
+- [Discussions](https://github.com/bwaynesu/BComponentComparator/discussions)
+
+## See Also
+
+- [GitHub](https://bwaynesu.github.io/portfolio/)
+- [Asset Store](https://assetstore.unity.com/publishers/115148)
+- [Medium](https://medium.com/@bwaynesu)
+- [X](https://x.com/bwaynesu)
+- [YouTube](https://www.youtube.com/@bwaynesu)
+
+---
+
+**BComponentComparator** — Spot inconsistencies, bulk adjust settings, and save hours!
