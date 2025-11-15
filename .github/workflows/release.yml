@@ -40,7 +40,7 @@ jobs:
       - name: Generate meta list
         if: steps.release.outputs.new_release_published == 'true'
         run: |
-          find Project/Assets/BComponentComparator/ -name \*.meta >> metaList
+          find Project/Packages/BComponentComparator/ -name \*.meta >> metaList
 
       - name: Create UnityPackage
         if: steps.release.outputs.new_release_published == 'true'
