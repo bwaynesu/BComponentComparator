@@ -53,7 +53,7 @@ namespace BComponentComparator.Editor
             {
                 // Extract Component from GameObject
                 TargetComponent = go.GetComponent(componentType);
-                
+
                 if (TargetComponent == null)
                 {
                     throw new ArgumentException($"GameObject '{go.name}' does not have Component of type '{componentType.Name}'");

@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -7,52 +8,58 @@ namespace BComponentComparator.Editor
 {
     /// <summary>
     /// Static utility class for handling drag-drop operations and validation.
-    /// Provides validation for Component types and objects (GameObjects, ScriptableObjects, Materials).
+    /// Provides validation for Component types and objects (GameObjects, ScriptableObjects, Materials, etc).
     /// Rejects Prefab assets per requirements.
     /// </summary>
     public static class DragDropHandler
     {
+        private class DragCallbackStorage
+        {
+            public EventCallback<DragUpdatedEvent> OnDragUpdated;
+            public EventCallback<DragPerformEvent> OnDragPerform;
+            public EventCallback<DragLeaveEvent> OnDragLeave;
+            public EventCallback<DragExitedEvent> OnDragExited;
+        }
+
+        private static readonly string dragHoverClassName = "drag-hover";
+        private static readonly string dragRejectedClassName = "drag-rejected";
+        private static readonly ConditionalWeakTable<VisualElement, DragCallbackStorage> elementDragCallbacksMap = new();
+
         /// <summary>
-        /// Validate if the dropped object is a valid Component type or MonoScript.
+        /// Try to extract the type of the dropped object.
         /// </summary>
         /// <param name="obj">Dropped object</param>
-        /// <param name="componentType">Extracted Component type</param>
-        /// <returns>True if valid Component type</returns>
-        public static bool ValidateComponentType(UnityEngine.Object obj, out Type componentType)
+        /// <param name="type">Extracted type</param>
+        /// <returns>True if type extracted successfully</returns>
+        public static bool TryExtractedType(UnityEngine.Object obj, out Type type)
         {
-            componentType = null;
+            type = null;
 
             if (obj == null)
             {
                 return false;
             }
 
-            // Direct Component instance
-            if (obj is Component component)
-            {
-                componentType = component.GetType();
-                return true;
-            }
-
             // MonoScript (drag .cs file from Project window)
             if (obj is MonoScript monoScript)
             {
-                Type scriptType = monoScript.GetClass();
+                var scriptType = monoScript.GetClass();
                 if (scriptType != null && typeof(Component).IsAssignableFrom(scriptType))
                 {
-                    componentType = scriptType;
+                    type = scriptType;
                     return true;
                 }
             }
 
-            // ScriptableObject or Material type (direct asset)
-            if (obj is ScriptableObject || obj is Material)
+            type = obj.GetType();
+
+            // Can't compare GameObject type directly
+            if (typeof(GameObject).IsAssignableFrom(type))
             {
-                componentType = obj.GetType();
-                return true;
+                return false;
             }
 
-            return false;
+            return true;
         }
 
         /// <summary>
@@ -62,7 +69,7 @@ namespace BComponentComparator.Editor
         /// <param name="obj">Dropped object</param>
         /// <param name="requiredType">Required Component/asset type</param>
         /// <returns>True if valid and matches type</returns>
-        public static bool ValidateObject(UnityEngine.Object obj, Type requiredType)
+        public static bool IsValidObject(UnityEngine.Object obj, Type requiredType)
         {
             if (obj == null || requiredType == null)
             {
@@ -81,18 +88,15 @@ namespace BComponentComparator.Editor
                 return IsValidGameObject(go, requiredType);
             }
 
-            // ScriptableObject or Material: type must match
-            if (obj is ScriptableObject || obj is Material)
-            {
-                return IsValidAsset(obj, requiredType);
-            }
-
-            return false;
+            return IsValidAsset(obj, requiredType);
         }
 
         /// <summary>
         /// Check if GameObject has the required Component type.
         /// </summary>
+        /// <param name="go">GameObject to check</param>
+        /// <param name="componentType">Required Component type</param>
+        /// <returns>True if GameObject has the Component</returns>
         public static bool IsValidGameObject(GameObject go, Type componentType)
         {
             if (go == null || componentType == null)
@@ -106,18 +110,15 @@ namespace BComponentComparator.Editor
                 return false;
             }
 
-            Component component = go.GetComponent(componentType);
-            if (component == null)
-            {
-                return false;
-            }
-
-            return true;
+            return go.TryGetComponent(componentType, out _);
         }
 
         /// <summary>
-        /// Check if asset (ScriptableObject/Material) matches the required type.
+        /// Check if asset matches the required type.
         /// </summary>
+        /// <param name="asset">Asset to check</param>
+        /// <param name="requiredType">Required type</param>
+        /// <returns>True if asset matches type</returns>
         public static bool IsValidAsset(UnityEngine.Object asset, Type requiredType)
         {
             if (asset == null || requiredType == null)
@@ -125,12 +126,7 @@ namespace BComponentComparator.Editor
                 return false;
             }
 
-            if (!requiredType.IsAssignableFrom(asset.GetType()))
-            {
-                return false;
-            }
-
-            return true;
+            return requiredType.IsAssignableFrom(asset.GetType());
         }
 
         /// <summary>
@@ -147,18 +143,35 @@ namespace BComponentComparator.Editor
         {
             if (target == null || validator == null || onDropAccepted == null)
             {
-                throw new ArgumentNullException("Target, validator, and callback must not be null");
+                throw new ArgumentNullException($"{nameof(target)}, {nameof(validator)}, and {nameof(onDropAccepted)} must not be null");
             }
 
-            target.RegisterCallback<DragUpdatedEvent>(evt => OnDragUpdated(evt, target, validator));
-            target.RegisterCallback<DragPerformEvent>(evt => OnDragPerform(evt, target, validator, onDropAccepted));
-            target.RegisterCallback<DragLeaveEvent>(evt => OnDragLeave(evt, target));
-            target.RegisterCallback<DragExitedEvent>(evt => OnDragExited(evt, target));
+            // Unregister old callbacks if they exist
+            UnregisterDragDropCallbacks(target);
+
+            // Create new callbacks
+            var storage = new DragCallbackStorage
+            {
+                OnDragUpdated = evt => OnDragUpdated(evt, target, validator),
+                OnDragPerform = evt => OnDragPerform(evt, target, validator, onDropAccepted),
+                OnDragLeave = evt => OnDragLeave(evt, target),
+                OnDragExited = evt => OnDragExited(evt, target)
+            };
+
+            // Register callbacks
+            target.RegisterCallback(storage.OnDragUpdated);
+            target.RegisterCallback(storage.OnDragPerform);
+            target.RegisterCallback(storage.OnDragLeave);
+            target.RegisterCallback(storage.OnDragExited);
+
+            // Store callbacks for later unregistration
+            elementDragCallbacksMap.AddOrUpdate(target, storage);
         }
 
         /// <summary>
         /// Unregister drag-drop event callbacks from a VisualElement.
         /// </summary>
+        /// <param name="target">Target VisualElement</param>
         public static void UnregisterDragDropCallbacks(VisualElement target)
         {
             if (target == null)
@@ -166,38 +179,48 @@ namespace BComponentComparator.Editor
                 return;
             }
 
-            target.UnregisterCallback<DragUpdatedEvent>(evt => { });
-            target.UnregisterCallback<DragPerformEvent>(evt => { });
-            target.UnregisterCallback<DragLeaveEvent>(evt => { });
-            target.UnregisterCallback<DragExitedEvent>(evt => { });
+            if (!elementDragCallbacksMap.TryGetValue(target, out var storage))
+            {
+                return;
+            }
+
+            target.UnregisterCallback(storage.OnDragUpdated);
+            target.UnregisterCallback(storage.OnDragPerform);
+            target.UnregisterCallback(storage.OnDragLeave);
+            target.UnregisterCallback(storage.OnDragExited);
+
+            elementDragCallbacksMap.Remove(target);
         }
 
-        private static void OnDragUpdated(DragUpdatedEvent evt, VisualElement target, Func<UnityEngine.Object, bool> validator)
+        private static void OnDragUpdated(
+            DragUpdatedEvent evt,
+            VisualElement target,
+            Func<UnityEngine.Object, bool> validator)
         {
             if (DragAndDrop.objectReferences.Length == 0)
             {
                 DragAndDrop.visualMode = DragAndDropVisualMode.Rejected;
-                target.RemoveFromClassList("drag-hover");
-                target.RemoveFromClassList("drag-rejected");
+                target.RemoveFromClassList(dragHoverClassName);
+                target.RemoveFromClassList(dragRejectedClassName);
                 return;
             }
 
-            UnityEngine.Object draggedObject = DragAndDrop.objectReferences[0];
-            bool isValid = validator(draggedObject);
+            var draggedObject = DragAndDrop.objectReferences[0];
+            var isValid = validator(draggedObject);
 
             DragAndDrop.visualMode = isValid ? DragAndDropVisualMode.Link : DragAndDropVisualMode.Rejected;
 
             // Visual feedback - remove old classes first
-            target.RemoveFromClassList("drag-hover");
-            target.RemoveFromClassList("drag-rejected");
-            
+            target.RemoveFromClassList(dragHoverClassName);
+            target.RemoveFromClassList(dragRejectedClassName);
+
             if (isValid)
             {
-                target.AddToClassList("drag-hover");
+                target.AddToClassList(dragHoverClassName);
             }
             else
             {
-                target.AddToClassList("drag-rejected");
+                target.AddToClassList(dragRejectedClassName);
             }
 
             evt.StopPropagation();
@@ -212,26 +235,27 @@ namespace BComponentComparator.Editor
             if (DragAndDrop.objectReferences.Length == 0)
             {
                 // Remove visual feedback
-                target.RemoveFromClassList("drag-hover");
-                target.RemoveFromClassList("drag-rejected");
+                target.RemoveFromClassList(dragHoverClassName);
+                target.RemoveFromClassList(dragRejectedClassName);
                 return;
             }
 
-            UnityEngine.Object draggedObject = DragAndDrop.objectReferences[0];
-            
+            var draggedObject = DragAndDrop.objectReferences[0];
+
             // Check for Prefab and show warning on actual drop
             if (PrefabUtility.IsPartOfPrefabAsset(draggedObject))
             {
                 Debug.LogWarning("Prefabs are not supported. Please drag the Prefab instance to the scene first.");
+
                 // Remove visual feedback
-                target.RemoveFromClassList("drag-hover");
-                target.RemoveFromClassList("drag-rejected");
+                target.RemoveFromClassList(dragHoverClassName);
+                target.RemoveFromClassList(dragRejectedClassName);
                 evt.StopPropagation();
+
                 return;
             }
-            
-            bool isValid = validator(draggedObject);
 
+            var isValid = validator(draggedObject);
             if (isValid)
             {
                 DragAndDrop.AcceptDrag();
@@ -239,8 +263,8 @@ namespace BComponentComparator.Editor
             }
 
             // Remove visual feedback
-            target.RemoveFromClassList("drag-hover");
-            target.RemoveFromClassList("drag-rejected");
+            target.RemoveFromClassList(dragHoverClassName);
+            target.RemoveFromClassList(dragRejectedClassName);
 
             evt.StopPropagation();
         }
@@ -248,8 +272,8 @@ namespace BComponentComparator.Editor
         private static void OnDragLeave(DragLeaveEvent evt, VisualElement target)
         {
             // Remove visual feedback
-            target.RemoveFromClassList("drag-hover");
-            target.RemoveFromClassList("drag-rejected");
+            target.RemoveFromClassList(dragHoverClassName);
+            target.RemoveFromClassList(dragRejectedClassName);
 
             evt.StopPropagation();
         }
@@ -257,8 +281,8 @@ namespace BComponentComparator.Editor
         private static void OnDragExited(DragExitedEvent evt, VisualElement target)
         {
             // Ensure visual feedback is removed when drag operation fully ends
-            target.RemoveFromClassList("drag-hover");
-            target.RemoveFromClassList("drag-rejected");
+            target.RemoveFromClassList(dragHoverClassName);
+            target.RemoveFromClassList(dragRejectedClassName);
 
             evt.StopPropagation();
         }

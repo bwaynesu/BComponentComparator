@@ -1,12 +1,12 @@
 # BComponentComparator
 
-A Unity Editor tool for comparing multiple Components, ScriptableObjects, or Materials side-by-side in a single window.
+A Unity Editor tool for comparing multiple Unity objects side-by-side in a single window.
 
 ## Features
 
 - **Side-by-Side Comparison**: View multiple Unity Inspectors in parallel columns for easy visual comparison
-- **Flexible Object Selection**: Support for GameObjects (Components), ScriptableObjects, and Materials
-- **Drag-and-Drop Interface**: Intuitive drag-and-drop to specify component type and add objects to compare
+- **Flexible Object Selection**: Support for almost any Unity object type including Components, ScriptableObjects, Materials, Textures, Audio Clips, and more
+- **Drag-and-Drop Interface**: Intuitive drag-and-drop to specify object type and add objects to compare
 - **Native Inspector Support**: Uses Unity's native Inspector rendering, ensuring full editing capabilities including:
   - Undo/Redo
   - Copy/Paste Component Values
@@ -28,13 +28,13 @@ A Unity Editor tool for comparing multiple Components, ScriptableObjects, or Mat
 ### Basic Workflow
 
 1. **Open the Window**: Go to `Window > BTools > BComponentComparator`
-2. **Specify Component Type**: 
+2. **Specify Object Type**: 
    - Drag a Component from the Scene/Hierarchy onto the "Drag Component type here..." field
    - Or drag a MonoScript (.cs file) from the Project window
-   - Or drag a ScriptableObject/Material asset type
+   - Or drag any Unity asset (ScriptableObject, Material, Texture, Audio Clip, etc.)
 3. **Add Objects to Compare**:
    - Drag GameObjects from the Hierarchy into the list (must have the specified Component)
-   - Or drag ScriptableObject/Material assets from the Project window
+   - Or drag any matching asset type from the Project window
    - Multiple objects can be dragged at once
 4. **Compare and Edit**:
    - View Inspectors side-by-side in the right panel
@@ -68,6 +68,11 @@ A Unity Editor tool for comparing multiple Components, ScriptableObjects, or Mat
 - **GameObject Components**: Any Component attached to GameObjects in the scene
 - **ScriptableObjects**: Any ScriptableObject asset in the project
 - **Materials**: Material assets in the project
+- **Textures**: Texture2D, RenderTexture, and other texture assets
+- **Audio**: AudioClip assets
+- **Animations**: AnimationClip, AnimatorController, and related assets
+- **Shaders**: Shader and ShaderGraph assets
+- **And More**: Almost any Unity object type that can be displayed in the Inspector
 - **Not Supported**: Prefab assets (drag Prefab instances from the scene instead)
 
 ## Requirements
@@ -78,10 +83,11 @@ A Unity Editor tool for comparing multiple Components, ScriptableObjects, or Mat
 ## Tips
 
 - **Use for Bulk Editing**: Compare and adjust properties across multiple objects efficiently
-- **Quality Control**: Quickly spot inconsistencies in Component settings
+- **Quality Control**: Quickly spot inconsistencies in object settings
 - **Data Migration**: Copy settings from one object to many others using native copy/paste
+- **Asset Management**: Compare textures, materials, audio settings, and other assets side-by-side
 - **Custom Inspectors**: Fully supports custom Inspector drawers and property drawers
-- **Survives Recompilation**: Your comparison setup (component type, objects list, and inspector width) automatically persists across script recompilation
+- **Survives Recompilation**: Your comparison setup (object type, objects list, and inspector width) automatically persists across script recompilation
 
 ## Known Limitations
 
@@ -90,4 +96,4 @@ A Unity Editor tool for comparing multiple Components, ScriptableObjects, or Mat
 
 ## License
 
-See LICENSE file for details.
+See [LICENSE](LICENSE) file for details.

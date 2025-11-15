@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,10 +12,20 @@ namespace BComponentComparator.Editor
     /// </summary>
     public class InspectorColumnController : IDisposable
     {
-        private ScrollView scrollView;
-        private VisualElement columnsContainer;
-        private List<VisualElement> inspectorColumns;
-        private List<ComparisonItem> currentItems;
+        private static readonly string inspectorColumnClassName = "inspector-column";
+        private static readonly string inspectorColumnsContainerClassName = "inspector-columns-container";
+        private static readonly string inspectorColumnHeaderClassName = "inspector-column-header";
+        private static readonly string inspectorColumnHeaderSelectedClassName = "inspector-column-header-selected";
+        private static readonly string inspectorColumnHeaderLabelClassName = "inspector-column-header-label";
+        private static readonly string removeButtonClassName = "remove-button";
+        private static readonly string inspectorContentClassName = "inspector-content";
+        private static readonly string emptyStateClassName = "empty-state";
+
+        private readonly ScrollView scrollView;
+        private readonly VisualElement columnsContainer;
+        private readonly List<VisualElement> inspectorColumns;
+        private readonly List<ComparisonItem> currentItems;
+
         private int columnWidth = 300;
 
         /// <summary>
@@ -27,20 +36,16 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Constructor initializes the controller with a ScrollView
         /// </summary>
+        /// <param name="scrollView">ScrollView to host the Inspector columns</param>
         public InspectorColumnController(ScrollView scrollView)
         {
-            if (scrollView == null)
-            {
-                throw new ArgumentNullException(nameof(scrollView));
-            }
-
-            this.scrollView = scrollView;
+            this.scrollView = scrollView ?? throw new ArgumentNullException(nameof(scrollView));
             this.inspectorColumns = new List<VisualElement>();
             this.currentItems = new List<ComparisonItem>();
 
             // Create container for Inspector columns
             columnsContainer = new VisualElement();
-            columnsContainer.AddToClassList("inspector-columns-container");
+            columnsContainer.AddToClassList(inspectorColumnsContainerClassName);
             columnsContainer.style.flexDirection = FlexDirection.Row;
             columnsContainer.style.alignItems = Align.FlexStart;
 
@@ -52,6 +57,7 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Rebuild all Inspector columns based on current comparison items
         /// </summary>
+        /// <param name="items">List of ComparisonItem to display</param>
         public void RebuildColumns(IReadOnlyList<ComparisonItem> items)
         {
             if (items == null)
@@ -76,7 +82,7 @@ namespace BComponentComparator.Editor
             {
                 if (!item.IsValid())
                 {
-                    UnityEngine.Debug.LogWarning($"Skipping invalid item: {item.DisplayName}");
+                    Debug.LogWarning($"Skipping invalid item: {item.DisplayName}");
                     continue;
                 }
 
@@ -94,10 +100,7 @@ namespace BComponentComparator.Editor
             foreach (var column in inspectorColumns)
             {
                 var inspector = column.Q<InspectorElement>();
-                if (inspector != null)
-                {
-                    inspector.Unbind();
-                }
+                inspector?.Unbind();
                 columnsContainer.Remove(column);
             }
 
@@ -115,6 +118,7 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Highlight Inspector columns for selected objects
         /// </summary>
+        /// <param name="selectedObjects">List of selected Object</param>
         public void HighlightColumns(List<UnityEngine.Object> selectedObjects)
         {
             if (selectedObjects == null)
@@ -125,26 +129,23 @@ namespace BComponentComparator.Editor
             // Remove all highlights first
             foreach (var column in inspectorColumns)
             {
-                var header = column.Q(className: "inspector-column-header");
-                if (header != null)
-                {
-                    header.RemoveFromClassList("inspector-column-header-selected");
-                }
+                var header = column.Q(className: inspectorColumnHeaderClassName);
+                header?.RemoveFromClassList(inspectorColumnHeaderSelectedClassName);
             }
 
             // Add highlight to selected columns
-            for (int i = 0; i < inspectorColumns.Count && i < currentItems.Count; i++)
+            for (var i = 0; i < inspectorColumns.Count && i < currentItems.Count; i++)
             {
                 var column = inspectorColumns[i];
                 var item = currentItems[i];
-                var header = column.Q(className: "inspector-column-header");
-                
+                var header = column.Q(className: inspectorColumnHeaderClassName);
+
                 if (header != null && item.IsValid())
                 {
                     // Check if this column's object is in selection
                     if (selectedObjects.Contains(item.TargetObject))
                     {
-                        header.AddToClassList("inspector-column-header-selected");
+                        header.AddToClassList(inspectorColumnHeaderSelectedClassName);
                     }
                 }
             }
@@ -153,10 +154,11 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Set the width of Inspector columns
         /// </summary>
+        /// <param name="width">Width in pixels</param>
         public void SetColumnWidth(int width)
         {
             columnWidth = width;
-            
+
             // Update all existing columns
             foreach (var column in inspectorColumns)
             {
@@ -168,30 +170,30 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Create an Inspector column for a comparison item
         /// </summary>
+        /// <param name="item">ComparisonItem to display</param>
         private void CreateInspectorColumn(ComparisonItem item)
         {
             // Create column container
             var column = new VisualElement();
-            column.AddToClassList("inspector-column");
+            column.AddToClassList(inspectorColumnClassName);
             column.style.width = columnWidth;
             column.style.minWidth = columnWidth;
 
             // Header container with name and remove button
             var headerContainer = new VisualElement();
-            headerContainer.AddToClassList("inspector-column-header");
+            headerContainer.AddToClassList(inspectorColumnHeaderClassName);
             headerContainer.style.position = Position.Relative;
 
             var headerLabel = new Label(item.DisplayName);
             headerLabel.style.flexGrow = 1;
             headerLabel.style.overflow = Overflow.Hidden;
             headerLabel.style.paddingRight = 25; // Space for button
-            headerLabel.AddToClassList("inspector-column-header-label");
+            headerLabel.AddToClassList(inspectorColumnHeaderLabelClassName);
             headerContainer.Add(headerLabel);
 
             // Remove button with × symbol (absolutely positioned, initially hidden)
-            var removeButton = new Button();
-            removeButton.text = "×";
-            removeButton.AddToClassList("remove-button");
+            var removeButton = new Button { text = "×" };
+            removeButton.AddToClassList(removeButtonClassName);
             removeButton.style.position = Position.Absolute;
             removeButton.style.right = 8;
             removeButton.style.top = 5;
@@ -216,7 +218,7 @@ namespace BComponentComparator.Editor
 
             // Inspector content container
             var contentContainer = new VisualElement();
-            contentContainer.AddToClassList("inspector-content");
+            contentContainer.AddToClassList(inspectorContentClassName);
 
             // Create InspectorElement
             var inspector = new InspectorElement();
@@ -233,6 +235,7 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Handle remove column button click
         /// </summary>
+        /// <param name="item">ComparisonItem to remove</param>
         private void OnRemoveColumn(ComparisonItem item)
         {
             // Trigger removal through event
@@ -245,7 +248,7 @@ namespace BComponentComparator.Editor
         private void ShowEmptyState()
         {
             var emptyState = new VisualElement();
-            emptyState.AddToClassList("empty-state");
+            emptyState.AddToClassList(emptyStateClassName);
             emptyState.Add(new Label("Add items to the list to compare"));
             columnsContainer.Add(emptyState);
         }

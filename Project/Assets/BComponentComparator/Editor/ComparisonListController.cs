@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace BComponentComparator.Editor
@@ -11,8 +12,10 @@ namespace BComponentComparator.Editor
     /// </summary>
     public class ComparisonListController
     {
-        private List<ComparisonItem> items;
-        private ListView listView;
+        private readonly List<ComparisonItem> items;
+        private readonly ListView listView;
+        private readonly Dictionary<Button, Action> removeButtonClickActionMap;
+
         private Type requiredType;
 
         /// <summary>
@@ -28,6 +31,8 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Constructor creates ListView and initializes item list
         /// </summary>
+        /// <param name="container">Parent VisualElement to host the ListView</param>
+        /// <param name="insertIndex">Index to insert ListView into container, defaults to -1 for appending</param>
         public ComparisonListController(VisualElement container, int insertIndex = -1)
         {
             if (container == null)
@@ -36,6 +41,7 @@ namespace BComponentComparator.Editor
             }
 
             items = new List<ComparisonItem>();
+            removeButtonClickActionMap = new Dictionary<Button, Action>();
 
             // Create ListView
             listView = new ListView();
@@ -68,46 +74,6 @@ namespace BComponentComparator.Editor
         }
 
         /// <summary>
-        /// Handle ListView selection changed
-        /// </summary>
-        private void OnSelectionChanged(IEnumerable<object> selectedItems)
-        {
-            var selectedObjects = new List<UnityEngine.Object>();
-            
-            foreach (var item in selectedItems)
-            {
-                if (item is ComparisonItem compItem && compItem.IsValid())
-                {
-                    selectedObjects.Add(compItem.TargetObject);
-                }
-            }
-
-            // Sync Unity Selection
-            if (selectedObjects.Count > 0)
-            {
-                Selection.objects = selectedObjects.ToArray();
-                
-                // Ping the first selected object to highlight it in Project window
-                if (selectedObjects.Count == 1)
-                {
-                    EditorGUIUtility.PingObject(selectedObjects[0]);
-                }
-            }
-
-            // Notify for Inspector highlight update
-            OnSelectionChangedEvent?.Invoke(selectedObjects);
-        }
-        
-        /// <summary>
-        /// Handle ListView item reorder
-        /// </summary>
-        private void OnItemIndexChanged(int oldIndex, int newIndex)
-        {
-            // Notify that list order has changed
-            OnItemsChanged?.Invoke();
-        }
-
-        /// <summary>
         /// Refresh drag-drop callbacks (useful when window is re-docked)
         /// </summary>
         public void RefreshDragDropCallbacks()
@@ -117,50 +83,11 @@ namespace BComponentComparator.Editor
                 RegisterDragDropCallbacks();
             }
         }
-        
-        /// <summary>
-        /// Register drag-drop callbacks for ListView
-        /// </summary>
-        private void RegisterDragDropCallbacks()
-        {
-            DragDropHandler.RegisterDragDropCallbacks(
-                listView,
-                obj => requiredType != null && DragDropHandler.ValidateObject(obj, requiredType),
-                OnObjectDropped
-            );
-        }
-
-        /// <summary>
-        /// Handle objects dropped on ListView
-        /// </summary>
-        private void OnObjectDropped(UnityEngine.Object obj)
-        {
-            if (requiredType == null)
-            {
-                return;
-            }
-
-            // Get all dragged objects
-            var draggedObjects = DragAndDrop.objectReferences;
-            var validObjects = new List<UnityEngine.Object>();
-
-            foreach (var draggedObj in draggedObjects)
-            {
-                if (draggedObj != null && DragDropHandler.ValidateObject(draggedObj, requiredType))
-                {
-                    validObjects.Add(draggedObj);
-                }
-            }
-
-            if (validObjects.Count > 0)
-            {
-                AddItems(validObjects);
-            }
-        }
 
         /// <summary>
         /// Set the required Component/asset type for validation
         /// </summary>
+        /// <param name="type">Type of Component or asset</param>
         public void SetRequiredType(Type type)
         {
             if (type == null)
@@ -169,23 +96,11 @@ namespace BComponentComparator.Editor
             }
 
             // If type changes, clear existing list and prompt user
-            if (requiredType != null && requiredType != type)
+            if (requiredType != null &&
+                requiredType != type &&
+                items.Count > 0)
             {
-                if (items.Count > 0)
-                {
-                    if (EditorUtility.DisplayDialog(
-                        "Component Type Changed",
-                        $"Changing type from '{requiredType.Name}' to '{type.Name}' will clear the current list. Continue?",
-                        "Yes", "No"))
-                    {
-                        ClearItems();
-                    }
-                    else
-                    {
-                        // User cancelled, keep old type
-                        return;
-                    }
-                }
+                ClearItems();
             }
 
             requiredType = type;
@@ -194,6 +109,7 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Add a single item to the list
         /// </summary>
+        /// <param name="obj">The object to add (GameObject, ScriptableObject, or Material, etc.)</param>
         public void AddItem(UnityEngine.Object obj)
         {
             if (obj == null || requiredType == null)
@@ -204,7 +120,7 @@ namespace BComponentComparator.Editor
             // Check for duplicates
             if (items.Exists(item => item.TargetObject == obj))
             {
-                UnityEngine.Debug.LogWarning($"{obj.name} already in comparison list");
+                Debug.LogWarning($"{obj.name} already in comparison list");
                 return;
             }
 
@@ -217,13 +133,14 @@ namespace BComponentComparator.Editor
             }
             catch (ArgumentException ex)
             {
-                UnityEngine.Debug.LogWarning(ex.Message);
+                Debug.LogWarning(ex.Message);
             }
         }
 
         /// <summary>
         /// Add multiple items in batch (more efficient than calling AddItem repeatedly)
         /// </summary>
+        /// <param name="objects">Collection of objects to add</param>
         public void AddItems(IEnumerable<UnityEngine.Object> objects)
         {
             if (objects == null || requiredType == null)
@@ -231,7 +148,7 @@ namespace BComponentComparator.Editor
                 return;
             }
 
-            bool anyAdded = false;
+            var anyAdded = false;
             foreach (var obj in objects)
             {
                 if (obj == null || items.Exists(item => item.TargetObject == obj))
@@ -247,7 +164,7 @@ namespace BComponentComparator.Editor
                 }
                 catch (ArgumentException ex)
                 {
-                    UnityEngine.Debug.LogWarning(ex.Message);
+                    Debug.LogWarning(ex.Message);
                 }
             }
 
@@ -261,6 +178,7 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// Remove item at specified index
         /// </summary>
+        /// <param name="index">Index of item to remove</param>
         public void RemoveItem(int index)
         {
             if (index < 0 || index >= items.Count)
@@ -310,6 +228,20 @@ namespace BComponentComparator.Editor
                 listView.itemIndexChanged -= OnItemIndexChanged;
             }
 
+            // Clear button click handlers
+            if (removeButtonClickActionMap != null)
+            {
+                foreach ((var btn, var clickAction) in removeButtonClickActionMap)
+                {
+                    if (btn != null)
+                    {
+                        btn.clicked -= clickAction;
+                    }
+                }
+
+                removeButtonClickActionMap.Clear();
+            }
+
             // Dispose all items
             if (items != null)
             {
@@ -317,7 +249,91 @@ namespace BComponentComparator.Editor
                 {
                     item?.Dispose();
                 }
+
                 items.Clear();
+            }
+        }
+
+        /// <summary>
+        /// Handle ListView selection changed
+        /// </summary>
+        /// <param name="selectedItems">Currently selected items</param>
+        private void OnSelectionChanged(IEnumerable<object> selectedItems)
+        {
+            var selectedObjects = new List<UnityEngine.Object>();
+
+            foreach (var item in selectedItems)
+            {
+                if (item is ComparisonItem compItem && compItem.IsValid())
+                {
+                    selectedObjects.Add(compItem.TargetObject);
+                }
+            }
+
+            // Sync Unity Selection
+            if (selectedObjects.Count > 0)
+            {
+                Selection.objects = selectedObjects.ToArray();
+
+                // Ping the first selected object to highlight it in Project window
+                if (selectedObjects.Count == 1)
+                {
+                    EditorGUIUtility.PingObject(selectedObjects[0]);
+                }
+            }
+
+            // Notify for Inspector highlight update
+            OnSelectionChangedEvent?.Invoke(selectedObjects);
+        }
+
+        /// <summary>
+        /// Handle ListView item reorder
+        /// </summary>
+        /// <param name="oldIndex">Old index of moved item</param>
+        /// <param name="newIndex">New index of moved item</param>
+        private void OnItemIndexChanged(int oldIndex, int newIndex)
+        {
+            OnItemsChanged?.Invoke();
+        }
+
+        /// <summary>
+        /// Register drag-drop callbacks for ListView
+        /// </summary>
+        private void RegisterDragDropCallbacks()
+        {
+            DragDropHandler.RegisterDragDropCallbacks(
+                listView,
+                obj => requiredType != null && DragDropHandler.IsValidObject(obj, requiredType),
+                OnObjectDropped
+            );
+        }
+
+        /// <summary>
+        /// Handle objects dropped on ListView
+        /// </summary>
+        /// <param name="obj">The object being dropped (not used, as we get all from DragAndDrop)</param>
+        private void OnObjectDropped(UnityEngine.Object obj)
+        {
+            if (requiredType == null)
+            {
+                return;
+            }
+
+            // Get all dragged objects
+            var draggedObjects = DragAndDrop.objectReferences;
+            var validObjects = new List<UnityEngine.Object>();
+
+            foreach (var draggedObj in draggedObjects)
+            {
+                if (draggedObj != null && DragDropHandler.IsValidObject(draggedObj, requiredType))
+                {
+                    validObjects.Add(draggedObj);
+                }
+            }
+
+            if (validObjects.Count > 0)
+            {
+                AddItems(validObjects);
             }
         }
 
@@ -347,8 +363,7 @@ namespace BComponentComparator.Editor
             itemElement.Add(label);
 
             // Remove button with × symbol (absolutely positioned, initially hidden)
-            var removeButton = new Button();
-            removeButton.text = "×";
+            var removeButton = new Button { text = "×" };
             removeButton.AddToClassList("remove-button");
             removeButton.style.position = Position.Absolute;
             removeButton.style.right = 5;
@@ -360,15 +375,8 @@ namespace BComponentComparator.Editor
             itemElement.Add(removeButton);
 
             // Show/hide button on hover
-            itemElement.RegisterCallback<MouseEnterEvent>(evt =>
-            {
-                removeButton.style.visibility = Visibility.Visible;
-            });
-
-            itemElement.RegisterCallback<MouseLeaveEvent>(evt =>
-            {
-                removeButton.style.visibility = Visibility.Hidden;
-            });
+            itemElement.RegisterCallback<MouseEnterEvent>(evt => { removeButton.style.visibility = Visibility.Visible; });
+            itemElement.RegisterCallback<MouseLeaveEvent>(evt => { removeButton.style.visibility = Visibility.Hidden; });
 
             return itemElement;
         }
@@ -376,6 +384,8 @@ namespace BComponentComparator.Editor
         /// <summary>
         /// ListView callback: Bind data to visual element
         /// </summary>
+        /// <param name="element">The visual element to bind</param>
+        /// <param name="index">Index of the item in the list</param>
         private void BindItem(VisualElement element, int index)
         {
             if (index < 0 || index >= items.Count)
@@ -395,9 +405,15 @@ namespace BComponentComparator.Editor
             {
                 // Store the item reference to find correct index when clicked
                 var currentItem = items[index];
-                
-                // Remove all previous click handlers
-                var clickEvent = new System.Action(() =>
+
+                // Remove old handler if exists
+                if (removeButtonClickActionMap.TryGetValue(removeButton, out var oldAction))
+                {
+                    removeButton.clicked -= oldAction;
+                }
+
+                // Create and store new handler
+                var clickEvent = new Action(() =>
                 {
                     // Find current index of the item (in case list was reordered)
                     int currentIndex = items.IndexOf(currentItem);
@@ -406,9 +422,8 @@ namespace BComponentComparator.Editor
                         RemoveItem(currentIndex);
                     }
                 });
-                
-                // Clear old handlers and add new one
-                removeButton.clicked -= () => { };
+
+                removeButtonClickActionMap[removeButton] = clickEvent;
                 removeButton.clicked += clickEvent;
             }
         }

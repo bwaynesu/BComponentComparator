@@ -41,7 +41,7 @@ namespace BComponentComparator.Editor.Tests
             var component = testGameObject.GetComponent<Transform>();
 
             // Act
-            bool isValid = DragDropHandler.ValidateComponentType(component, out System.Type componentType);
+            bool isValid = DragDropHandler.TryExtractedType(component, out System.Type componentType);
 
             // Assert
             Assert.IsTrue(isValid);
@@ -55,7 +55,7 @@ namespace BComponentComparator.Editor.Tests
             var scriptableObject = ScriptableObject.CreateInstance<TestScriptableObject>();
 
             // Act
-            bool isValid = DragDropHandler.ValidateComponentType(scriptableObject, out System.Type componentType);
+            bool isValid = DragDropHandler.TryExtractedType(scriptableObject, out System.Type componentType);
 
             // Assert
             Assert.IsTrue(isValid);
@@ -72,7 +72,7 @@ namespace BComponentComparator.Editor.Tests
             var material = new Material(Shader.Find("Standard"));
 
             // Act
-            bool isValid = DragDropHandler.ValidateComponentType(material, out System.Type componentType);
+            bool isValid = DragDropHandler.TryExtractedType(material, out System.Type componentType);
 
             // Assert
             Assert.IsTrue(isValid);
@@ -86,7 +86,7 @@ namespace BComponentComparator.Editor.Tests
         public void ValidateComponentType_WithNullObject_ReturnsFalse()
         {
             // Act
-            bool isValid = DragDropHandler.ValidateComponentType(null, out System.Type componentType);
+            bool isValid = DragDropHandler.TryExtractedType(null, out System.Type componentType);
 
             // Assert
             Assert.IsFalse(isValid);
@@ -97,7 +97,7 @@ namespace BComponentComparator.Editor.Tests
         public void ValidateObject_WithValidGameObject_ReturnsTrue()
         {
             // Act
-            bool isValid = DragDropHandler.ValidateObject(testGameObject, typeof(Rigidbody));
+            bool isValid = DragDropHandler.IsValidObject(testGameObject, typeof(Rigidbody));
 
             // Assert
             Assert.IsTrue(isValid);
@@ -107,7 +107,7 @@ namespace BComponentComparator.Editor.Tests
         public void ValidateObject_WithGameObjectMissingComponent_ReturnsFalse()
         {
             // Act
-            bool isValid = DragDropHandler.ValidateObject(testGameObject, typeof(BoxCollider));
+            bool isValid = DragDropHandler.IsValidObject(testGameObject, typeof(BoxCollider));
 
             // Assert
             Assert.IsFalse(isValid);
@@ -124,7 +124,7 @@ namespace BComponentComparator.Editor.Tests
             testPrefab = PrefabUtility.SaveAsPrefabAsset(testPrefab, prefabPath);
 
             // Act
-            bool isValid = DragDropHandler.ValidateObject(testPrefab, typeof(Rigidbody));
+            bool isValid = DragDropHandler.IsValidObject(testPrefab, typeof(Rigidbody));
 
             // Assert
             Assert.IsFalse(isValid);
@@ -141,7 +141,7 @@ namespace BComponentComparator.Editor.Tests
             var scriptableObject = ScriptableObject.CreateInstance<TestScriptableObject>();
 
             // Act
-            bool isValid = DragDropHandler.ValidateObject(scriptableObject, typeof(TestScriptableObject));
+            bool isValid = DragDropHandler.IsValidObject(scriptableObject, typeof(TestScriptableObject));
 
             // Assert
             Assert.IsTrue(isValid);
@@ -157,7 +157,7 @@ namespace BComponentComparator.Editor.Tests
             var material = new Material(Shader.Find("Standard"));
 
             // Act
-            bool isValid = DragDropHandler.ValidateObject(material, typeof(Material));
+            bool isValid = DragDropHandler.IsValidObject(material, typeof(Material));
 
             // Assert
             Assert.IsTrue(isValid);
@@ -170,7 +170,7 @@ namespace BComponentComparator.Editor.Tests
         public void ValidateObject_WithNullObject_ReturnsFalse()
         {
             // Act
-            bool isValid = DragDropHandler.ValidateObject(null, typeof(Transform));
+            bool isValid = DragDropHandler.IsValidObject(null, typeof(Transform));
 
             // Assert
             Assert.IsFalse(isValid);
@@ -180,7 +180,7 @@ namespace BComponentComparator.Editor.Tests
         public void ValidateObject_WithNullType_ReturnsFalse()
         {
             // Act
-            bool isValid = DragDropHandler.ValidateObject(testGameObject, null);
+            bool isValid = DragDropHandler.IsValidObject(testGameObject, null);
 
             // Assert
             Assert.IsFalse(isValid);

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -12,41 +13,64 @@ namespace BComponentComparator.Editor
     /// </summary>
     public class BComponentComparatorWindow : EditorWindow
     {
+        // --- Left Panel Class Names ---
+        private static readonly string controlPanelClassName = "control-panel";
+        private static readonly string componentTypeFieldClassName = "component-type-field";
+        private static readonly string widthControlRowClassName = "width-control-row";
+        private static readonly string widthLabelClassName = "width-label";
+        private static readonly string widthSliderClassName = "width-slider";
+        private static readonly string comparisonListClassName = "comparison-list";
+        private static readonly string buttonContainerClassName = "button-container";
+
+        // --- Left Panel Element Names ---
+        private static readonly string listPlaceholderName = "list-placeholder";
+
+        // --- Right Panel Class Names ---
+        private static readonly string comparisonPanelClassName = "comparison-panel";
+        private static readonly string comparisonScrollViewClassName = "comparison-scroll-view";
+        private static readonly string emptyStateClassName = "empty-state";
+
+        // --- Right Panel Element Names ---
+        private static readonly string scrollViewName = "inspector-scroll-view";
+
         // --- Serialized Fields (persist across recompilation) ---
-        [SerializeField] private string componentTypeAssemblyQualifiedName;
-        [SerializeField] private List<UnityEngine.Object> serializedObjects = new List<UnityEngine.Object>();
-        [SerializeField] private int inspectorWidth = 300;
-        
+        [SerializeField]
+        private string componentTypeAssemblyQualifiedName;
+
+        [SerializeField]
+        private List<UnityEngine.Object> serializedObjects = new();
+
+        [SerializeField]
+        private int inspectorWidth = 300;
+
         // --- Fields ---
         private Type currentComponentType;
         private ComparisonListController listController;
         private InspectorColumnController inspectorController;
 
-        // UI Elements
+        // --- UI Elements ---
         private TwoPaneSplitView splitView;
         private VisualElement componentTypeField;
         private Label componentTypeLabel;
         private Button clearListButton;
         private SliderInt widthSlider;
 
-        // --- EditorWindow Menu Item ---
         [MenuItem("Window/BTools/BComponentComparator")]
         public static void ShowWindow()
         {
-            BComponentComparatorWindow window = GetWindow<BComponentComparatorWindow>();
+            var window = GetWindow<BComponentComparatorWindow>();
             window.titleContent = new GUIContent("BComponentComparator");
             window.minSize = new Vector2(800, 400);
         }
 
-        // --- UI Toolkit Lifecycle ---
         public void CreateGUI()
         {
             // Load USS stylesheet using relative path from script location
             var scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
-            var scriptDirectory = System.IO.Path.GetDirectoryName(scriptPath);
-            var styleSheetPath = System.IO.Path.Combine(scriptDirectory, "Styles", "BComponentComparatorWindow.uss");
+            var scriptDirectory = Path.GetDirectoryName(scriptPath);
+            var styleSheetPath = Path.Combine(scriptDirectory, "Styles", $"{nameof(BComponentComparatorWindow)}.uss");
             styleSheetPath = styleSheetPath.Replace("\\", "/"); // Normalize path separators
-            
+
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(styleSheetPath);
             if (styleSheet != null)
             {
@@ -58,25 +82,29 @@ namespace BComponentComparator.Editor
             splitView.AddToClassList("b-component-comparator-window");
             rootVisualElement.Add(splitView);
 
-            // Create left panel (control area)
             CreateLeftPanel();
-
-            // Create right panel (comparison view)
             CreateRightPanel();
 
-            // Initialize controllers
             InitializeControllers();
-
-            // Register drag-drop and event handlers
             RegisterEventHandlers();
-            
+
             // Monitor geometry changes (e.g., window docking) to re-register callbacks
             rootVisualElement.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            
-            // Restore state after UI is built
+
             RestoreState();
         }
-        
+
+        private void OnDisable()
+        {
+            UnregisterEventHandlers();
+        }
+
+        private void OnDestroy()
+        {
+            listController?.Dispose();
+            inspectorController?.Dispose();
+        }
+
         private void OnGeometryChanged(GeometryChangedEvent evt)
         {
             // Re-register drag-drop callbacks when window is docked/undocked
@@ -84,11 +112,11 @@ namespace BComponentComparator.Editor
             {
                 DragDropHandler.RegisterDragDropCallbacks(
                     componentTypeField,
-                    obj => DragDropHandler.ValidateComponentType(obj, out _),
+                    obj => DragDropHandler.TryExtractedType(obj, out _),
                     OnComponentTypeDrop
                 );
             }
-            
+
             if (currentComponentType != null && listController != null)
             {
                 listController.RefreshDragDropCallbacks();
@@ -98,11 +126,11 @@ namespace BComponentComparator.Editor
         private void CreateLeftPanel()
         {
             var leftPanel = new VisualElement();
-            leftPanel.AddToClassList("control-panel");
+            leftPanel.AddToClassList(controlPanelClassName);
 
             // Component type field
             componentTypeField = new VisualElement();
-            componentTypeField.AddToClassList("component-type-field");
+            componentTypeField.AddToClassList(componentTypeFieldClassName);
             componentTypeLabel = new Label("Drag Component type here...");
             componentTypeLabel.style.color = new StyleColor(new Color(0.6f, 0.6f, 0.6f));
             componentTypeField.Add(componentTypeLabel);
@@ -110,38 +138,34 @@ namespace BComponentComparator.Editor
 
             // Column width controls - label and slider in one row
             var widthRow = new VisualElement();
-            widthRow.AddToClassList("width-control-row");
-            
+            widthRow.AddToClassList(widthControlRowClassName);
+
             var widthLabel = new Label("Inspector Width:");
-            widthLabel.AddToClassList("width-label");
+            widthLabel.AddToClassList(widthLabelClassName);
             widthRow.Add(widthLabel);
-            
+
             widthSlider = new SliderInt(200, 600) { value = 300 };
-            widthSlider.AddToClassList("width-slider");
+            widthSlider.AddToClassList(widthSliderClassName);
             widthRow.Add(widthSlider);
-            
+
             // Slider updates inspector width
             widthSlider.RegisterValueChangedCallback(evt =>
             {
                 inspectorWidth = evt.newValue;
-                if (inspectorController != null)
-                {
-                    inspectorController.SetColumnWidth(evt.newValue);
-                }
+                inspectorController?.SetColumnWidth(evt.newValue);
             });
-            
+
             leftPanel.Add(widthRow);
 
             // List view placeholder (will be created by ComparisonListController)
-            var listPlaceholder = new VisualElement();
-            listPlaceholder.name = "list-placeholder";
-            listPlaceholder.AddToClassList("comparison-list");
+            var listPlaceholder = new VisualElement { name = listPlaceholderName };
+            listPlaceholder.AddToClassList(comparisonListClassName);
             listPlaceholder.style.flexGrow = 1;
             leftPanel.Add(listPlaceholder);
 
             // Clear button below list
             var buttonContainer = new VisualElement();
-            buttonContainer.AddToClassList("button-container");
+            buttonContainer.AddToClassList(buttonContainerClassName);
 
             clearListButton = new Button { text = "Clear List" };
             clearListButton.SetEnabled(false);
@@ -155,17 +179,17 @@ namespace BComponentComparator.Editor
         private void CreateRightPanel()
         {
             var rightPanel = new VisualElement();
-            rightPanel.AddToClassList("comparison-panel");
+            rightPanel.AddToClassList(comparisonPanelClassName);
 
             // ScrollView for Inspector columns (will be managed by InspectorColumnController)
             var scrollView = new ScrollView(ScrollViewMode.VerticalAndHorizontal);
-            scrollView.AddToClassList("comparison-scroll-view");
-            scrollView.name = "inspector-scroll-view";
+            scrollView.AddToClassList(comparisonScrollViewClassName);
+            scrollView.name = scrollViewName;
             scrollView.style.flexGrow = 1;
 
             // Empty state
             var emptyState = new VisualElement();
-            emptyState.AddToClassList("empty-state");
+            emptyState.AddToClassList(emptyStateClassName);
             emptyState.Add(new Label("Add items to the list to compare"));
             scrollView.Add(emptyState);
 
@@ -176,24 +200,24 @@ namespace BComponentComparator.Editor
         private void InitializeControllers()
         {
             // Initialize ComparisonListController
-            var listPlaceholder = rootVisualElement.Q("list-placeholder");
+            var listPlaceholder = rootVisualElement.Q(listPlaceholderName);
             if (listPlaceholder != null)
             {
                 var parent = listPlaceholder.parent;
                 int placeholderIndex = parent.IndexOf(listPlaceholder);
-                
+
                 listController = new ComparisonListController(parent, placeholderIndex);
                 listPlaceholder.RemoveFromHierarchy(); // Remove placeholder
-                
+
                 // Subscribe to list changes
                 listController.OnItemsChanged += RefreshInspectorColumns;
-                
+
                 // Subscribe to selection changes
                 listController.OnSelectionChangedEvent += OnListSelectionChanged;
             }
 
             // Initialize InspectorColumnController
-            var scrollView = rootVisualElement.Q<ScrollView>("inspector-scroll-view");
+            var scrollView = rootVisualElement.Q<ScrollView>(scrollViewName);
             if (scrollView != null)
             {
                 inspectorController = new InspectorColumnController(scrollView);
@@ -203,22 +227,25 @@ namespace BComponentComparator.Editor
 
         private void OnRemoveItemFromInspector(ComparisonItem item)
         {
-            if (listController != null && item != null)
+            if (listController == null || item == null)
             {
-                var items = listController.GetItems();
-                int index = -1;
-                for (int i = 0; i < items.Count; i++)
+                return;
+            }
+
+            var items = listController.GetItems();
+            var index = -1;
+            for (var i = 0; i < items.Count; i++)
+            {
+                if (items[i] == item)
                 {
-                    if (items[i] == item)
-                    {
-                        index = i;
-                        break;
-                    }
+                    index = i;
+                    break;
                 }
-                if (index >= 0)
-                {
-                    listController.RemoveItem(index);
-                }
+            }
+
+            if (index >= 0)
+            {
+                listController.RemoveItem(index);
             }
         }
 
@@ -229,7 +256,7 @@ namespace BComponentComparator.Editor
             {
                 DragDropHandler.RegisterDragDropCallbacks(
                     componentTypeField,
-                    obj => DragDropHandler.ValidateComponentType(obj, out _),
+                    obj => DragDropHandler.TryExtractedType(obj, out _),
                     OnComponentTypeDrop
                 );
             }
@@ -248,7 +275,7 @@ namespace BComponentComparator.Editor
             {
                 rootVisualElement.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged);
             }
-            
+
             // Unregister drag-drop
             if (componentTypeField != null)
             {
@@ -271,33 +298,34 @@ namespace BComponentComparator.Editor
 
         private void OnComponentTypeDrop(UnityEngine.Object droppedObject)
         {
-            if (DragDropHandler.ValidateComponentType(droppedObject, out Type componentType))
+            if (!DragDropHandler.TryExtractedType(droppedObject, out Type componentType))
             {
-                currentComponentType = componentType;
-                componentTypeLabel.text = componentType.Name;
-                componentTypeLabel.style.color = Color.white;
-
-                // Set required type for list controller
-                if (listController != null)
-                {
-                    listController.SetRequiredType(componentType);
-                }
-
-                // Enable buttons
-                ValidateButtonStates();
-                
-                // Save state
-                SaveState();
+                return;
             }
+
+            currentComponentType = componentType;
+            componentTypeLabel.text = componentType.Name;
+            componentTypeLabel.style.color = Color.white;
+
+            // Set required type for list controller
+            listController?.SetRequiredType(componentType);
+
+            // Enable buttons
+            ValidateButtonStates();
+
+            // Save state
+            SaveState();
         }
 
         private void OnClearListButtonClick()
         {
-            if (listController != null && listController.GetItems().Count > 0)
+            if (listController == null || listController.GetItems().Count <= 0)
             {
-                listController.ClearItems();
-                SaveState();
+                return;
             }
+
+            listController.ClearItems();
+            SaveState();
         }
 
         private void RefreshInspectorColumns()
@@ -313,25 +341,23 @@ namespace BComponentComparator.Editor
 
         private void OnListSelectionChanged(List<UnityEngine.Object> selectedObjects)
         {
-            if (inspectorController != null)
-            {
-                inspectorController.HighlightColumns(selectedObjects);
-            }
+            inspectorController?.HighlightColumns(selectedObjects);
         }
 
         private void ValidateButtonStates()
         {
-            bool hasItems = listController != null && listController.GetItems().Count > 0;
+            var hasItems = listController != null && listController.GetItems().Count > 0;
             clearListButton?.SetEnabled(hasItems);
         }
-        
+
         private void SaveState()
         {
             // Save component type
             componentTypeAssemblyQualifiedName = currentComponentType?.AssemblyQualifiedName;
-            
+
             // Save objects from list
             serializedObjects.Clear();
+
             if (listController != null)
             {
                 var items = listController.GetItems();
@@ -344,7 +370,7 @@ namespace BComponentComparator.Editor
                 }
             }
         }
-        
+
         private void RestoreState()
         {
             // Restore component type
@@ -355,67 +381,40 @@ namespace BComponentComparator.Editor
                 {
                     componentTypeLabel.text = currentComponentType.Name;
                     componentTypeLabel.style.color = Color.white;
-                    
-                    if (listController != null)
-                    {
-                        listController.SetRequiredType(currentComponentType);
-                    }
+
+                    listController?.SetRequiredType(currentComponentType);
                 }
             }
-            
+
             // Restore inspector width
             if (widthSlider != null && inspectorWidth != 300)
             {
                 widthSlider.SetValueWithoutNotify(inspectorWidth);
-                if (inspectorController != null)
-                {
-                    inspectorController.SetColumnWidth(inspectorWidth);
-                }
+                inspectorController?.SetColumnWidth(inspectorWidth);
             }
-            
+
             // Restore objects
-            if (serializedObjects != null && serializedObjects.Count > 0 && currentComponentType != null && listController != null)
+            if (serializedObjects != null &&
+                serializedObjects.Count > 0 &&
+                currentComponentType != null &&
+                listController != null)
             {
                 var validObjects = new List<UnityEngine.Object>();
                 foreach (var obj in serializedObjects)
                 {
-                    if (obj != null && DragDropHandler.ValidateObject(obj, currentComponentType))
+                    if (obj != null && DragDropHandler.IsValidObject(obj, currentComponentType))
                     {
                         validObjects.Add(obj);
                     }
                 }
-                
+
                 if (validObjects.Count > 0)
                 {
                     listController.AddItems(validObjects);
                 }
             }
-            
+
             ValidateButtonStates();
-        }
-
-        public void OnEnable()
-        {
-            // Event handlers are registered in CreateGUI() after UI elements are created
-        }
-
-        public void OnDisable()
-        {
-            UnregisterEventHandlers();
-        }
-
-        public void OnDestroy()
-        {
-            // Cleanup controllers
-            if (listController != null)
-            {
-                listController.Dispose();
-            }
-
-            if (inspectorController != null)
-            {
-                inspectorController.Dispose();
-            }
         }
     }
 }
