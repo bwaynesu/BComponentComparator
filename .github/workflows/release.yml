@@ -40,14 +40,16 @@ jobs:
       - name: Generate meta list
         if: steps.release.outputs.new_release_published == 'true'
         run: |
-          find Project/Packages/BComponentComparator/ -name \*.meta >> metaList
+          cd Project
+          find Packages/BComponentComparator/ -name \*.meta >> metaList
 
       - name: Create UnityPackage
         if: steps.release.outputs.new_release_published == 'true'
         uses: pCYSl5EDgo/create-unitypackage@master
         with:
           package-path: "BComponentComparator-${{ steps.release.outputs.new_release_version }}.unitypackage"
-          include-files: metaList
+          include-files: Project/metaList
+          project-folder: 'Project/'
 
       - name: Upload UnityPackage to GitHub Release
         if: steps.release.outputs.new_release_published == 'true'
