@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using UnityEditor;
+using UnityEditor.Animations;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -25,6 +27,7 @@ namespace BTools.BComponentComparator.Editor
         private readonly VisualElement columnsContainer;
         private readonly List<VisualElement> inspectorColumns;
         private readonly List<ComparisonItem> currentItems;
+        private readonly Dictionary<ComparisonItem, UnityEditor.Editor> itemEditorMap;
 
         private int columnWidth = 300;
 
@@ -42,6 +45,7 @@ namespace BTools.BComponentComparator.Editor
             this.scrollView = scrollView ?? throw new ArgumentNullException(nameof(scrollView));
             this.inspectorColumns = new List<VisualElement>();
             this.currentItems = new List<ComparisonItem>();
+            this.itemEditorMap = new Dictionary<ComparisonItem, UnityEditor.Editor>();
 
             // Create container for Inspector columns
             columnsContainer = new VisualElement();
@@ -96,6 +100,17 @@ namespace BTools.BComponentComparator.Editor
         /// </summary>
         public void Clear()
         {
+            // Destroy cached editors
+            foreach ((_, var editor) in itemEditorMap)
+            {
+                if (editor != null)
+                {
+                    UnityEngine.Object.DestroyImmediate(editor);
+                }
+            }
+
+            itemEditorMap.Clear();
+
             // Unbind and remove all Inspector columns
             foreach (var column in inspectorColumns)
             {
@@ -220,10 +235,18 @@ namespace BTools.BComponentComparator.Editor
             var contentContainer = new VisualElement();
             contentContainer.AddToClassList(inspectorContentClassName);
 
-            // Create InspectorElement
-            var inspector = new InspectorElement();
-            inspector.Bind(item.SerializedObject);
-            contentContainer.Add(inspector);
+            // Check if object requires IMGUI rendering
+            if (RequiresIMGUI(item))
+            {
+                CreateIMGUIInspector(item, contentContainer);
+            }
+            else
+            {
+                // Create InspectorElement for UIElements-compatible types
+                var inspector = new InspectorElement();
+                inspector.Bind(item.SerializedObject);
+                contentContainer.Add(inspector);
+            }
 
             column.Add(contentContainer);
 
@@ -251,6 +274,73 @@ namespace BTools.BComponentComparator.Editor
             emptyState.AddToClassList(emptyStateClassName);
             emptyState.Add(new Label("Add items to the list to compare"));
             columnsContainer.Add(emptyState);
+        }
+
+        /// <summary>
+        /// Check if the object requires IMGUI rendering instead of UIElements
+        /// </summary>
+        /// <param name="item">ComparisonItem to check</param>
+        /// <returns>True if IMGUI is required</returns>
+        private bool RequiresIMGUI(ComparisonItem item)
+        {
+            if (item?.SerializedObject?.targetObject == null)
+            {
+                return false;
+            }
+
+            var targetObject = item.SerializedObject.targetObject;
+
+            // Types that typically require IMGUI rendering
+            // Material, Shader, Texture, and some other asset types have custom IMGUI inspectors
+            return targetObject is Material
+                || targetObject is Shader
+                || targetObject is Texture
+                || targetObject is Texture2D
+                || targetObject is Texture3D
+                || targetObject is RenderTexture
+                || targetObject is Cubemap
+                || targetObject is ComputeShader
+                || targetObject is AnimationClip
+                || targetObject is AnimatorController;
+        }
+
+        /// <summary>
+        /// Create an IMGUI-based inspector for objects that don't render properly with InspectorElement
+        /// </summary>
+        /// <param name="item">ComparisonItem to display</param>
+        /// <param name="container">Container to add the inspector to</param>
+        private void CreateIMGUIInspector(ComparisonItem item, VisualElement container)
+        {
+            // Destroy previous editor if exists
+            if (itemEditorMap.TryGetValue(item, out var existingEditor) && existingEditor != null)
+            {
+                UnityEngine.Object.DestroyImmediate(existingEditor);
+            }
+
+            // Create editor for the target object
+            var editor = UnityEditor.Editor.CreateEditor(item.SerializedObject.targetObject);
+            if (editor == null)
+            {
+                // Fallback to regular InspectorElement if editor creation fails
+                var fallbackInspector = new InspectorElement();
+                fallbackInspector.Bind(item.SerializedObject);
+                container.Add(fallbackInspector);
+                return;
+            }
+
+            // Cache the editor for cleanup later
+            itemEditorMap[item] = editor;
+
+            // Create IMGUI container
+            var imguiContainer = new IMGUIContainer(() =>
+            {
+                editor.DrawHeader();
+                EditorGUILayout.BeginVertical();
+                editor.OnInspectorGUI();
+                EditorGUILayout.EndVertical();
+            });
+
+            container.Add(imguiContainer);
         }
     }
 }
