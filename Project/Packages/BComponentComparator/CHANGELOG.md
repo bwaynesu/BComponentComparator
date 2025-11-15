@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/bwaynesu/BComponentComparator/compare/1.0.2...1.1.0) (2025-11-15)
+
+
+### Bug Fixes
+
+* show material inspector correctly ([af1e743](https://github.com/bwaynesu/BComponentComparator/commit/af1e743e0f4aa3ac8414044f62198f4783bc75db))
+
+
+### Features
+
+* add dropped object to list ([7ab66c6](https://github.com/bwaynesu/BComponentComparator/commit/7ab66c630f366af1aeb7375d5b1169a14e58f5a3))
+
 ## [1.0.2](https://github.com/bwaynesu/BComponentComparator/compare/1.0.1...1.0.2) (2025-11-15)
 
 
