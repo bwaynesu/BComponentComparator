@@ -5,7 +5,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BComponentComparator.Editor
+namespace BTools.BComponentComparator.Editor
 {
     /// <summary>
     /// Main EditorWindow for Component Comparator tool.

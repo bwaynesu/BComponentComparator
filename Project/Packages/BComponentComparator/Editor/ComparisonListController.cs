@@ -4,7 +4,7 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BComponentComparator.Editor
+namespace BTools.BComponentComparator.Editor
 {
     /// <summary>
     /// Controller for managing the comparison list (left panel).

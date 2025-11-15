@@ -2,7 +2,7 @@ using System;
 using UnityEditor;
 using UnityEngine;
 
-namespace BComponentComparator.Editor
+namespace BTools.BComponentComparator.Editor
 {
     /// <summary>
     /// Data model wrapping a Unity Object with metadata for comparison.

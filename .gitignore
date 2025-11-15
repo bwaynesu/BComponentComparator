@@ -97,6 +97,7 @@ InitTestScene*.unity*
 
 # Auto-generated scenes by play mode tests
 /[Aa]ssets/[Ii]nit[Tt]est[Ss]cene*.unity*
+
 Project/.vsconfig
-Project/Assets/BComponentComparator/Spec-Kit
-Project/Assets/BComponentComparator/Spec-Kit.meta
+Project/Spec-Kit
+Project/Spec-Kit.meta

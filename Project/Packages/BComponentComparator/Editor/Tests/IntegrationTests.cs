@@ -1,9 +1,9 @@
 using NUnit.Framework;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BComponentComparator.Editor.Tests
+namespace BTools.BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Integration tests for end-to-end workflow
@@ -88,7 +88,7 @@ namespace BComponentComparator.Editor.Tests
 
             // Assert
             Assert.GreaterOrEqual(buttons.Count, 1, "Should have at least 1 button");
-            
+
             var clearButton = buttons.Find(b => b.text.Contains("Clear"));
 
             Assert.IsNotNull(clearButton, "Clear button should exist");

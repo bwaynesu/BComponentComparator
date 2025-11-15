@@ -1,0 +1,68 @@
+name: Release
+run-name: Release (${{ github.ref_name }})
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    tags-ignore:
+      - "**"
+
+jobs:
+  release:
+    name: Release (${{ github.ref_name }})
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+    outputs:
+      channel: ${{ steps.release.outputs.new_release_channel }}
+      released: ${{ steps.release.outputs.new_release_published }}
+      tag: ${{ steps.release.outputs.new_release_git_tag }}
+      version: ${{ steps.release.outputs.new_release_version }}
+    steps:
+      - name: Checkout (${{ github.ref_name }})
+        uses: actions/checkout@v4
+
+      - name: Run semantic release
+        uses: cycjimmy/semantic-release-action@v4
+        id: release
+        with:
+          working_directory: Project/Packages/BComponentComparator
+          extra_plugins: |
+            @semantic-release/changelog
+            @semantic-release/git
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate meta list
+        if: steps.release.outputs.new_release_published == 'true'
+        run: |
+          find Project/Assets/BComponentComparator/ -name \*.meta >> metaList
+
+      - name: Create UnityPackage
+        if: steps.release.outputs.new_release_published == 'true'
+        uses: pCYSl5EDgo/create-unitypackage@master
+        with:
+          package-path: "BComponentComparator-${{ steps.release.outputs.new_release_version }}.unitypackage"
+          include-files: metaList
+
+      - name: Upload UnityPackage to GitHub Release
+        if: steps.release.outputs.new_release_published == 'true'
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.release.outputs.new_release_git_tag }}
+          files: "BComponentComparator-${{ steps.release.outputs.new_release_version }}.unitypackage"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - run: |
+          echo "New release published: '${{ steps.release.outputs.new_release_published }}'" | tee -a $GITHUB_STEP_SUMMARY
+          echo "New release channel: '${{ steps.release.outputs.new_release_channel }}'" | tee -a $GITHUB_STEP_SUMMARY
+          echo "New release git tag: '${{ steps.release.outputs.new_release_git_tag }}'" | tee -a $GITHUB_STEP_SUMMARY
+          echo "New release version: '${{ steps.release.outputs.new_release_version }}'" | tee -a $GITHUB_STEP_SUMMARY
+          if [[ "${{ steps.release.outputs.new_release_published }}" == "true" ]]; then
+            echo "Unity Package: BComponentComparator-${{ steps.release.outputs.new_release_version }}.unitypackage" | tee -a $GITHUB_STEP_SUMMARY
+          fi

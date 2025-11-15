@@ -1,0 +1,28 @@
+{
+  "name": "com.bwaynesu.btools.bcomponentcomparator",
+  "displayName": "BComponentComparator",
+  "description": "A Unity Editor tool for comparing multiple Unity objects side-by-side in a single window. Supports GameObjects, Components, ScriptableObjects, Materials, Textures, Audio Clips, and more with full Inspector editing capabilities.",
+  "version": "0.0.0",
+  "unity": "2022.3",
+  "keywords": [
+    "editor",
+    "inspector",
+    "comparison",
+    "ui-toolkit",
+    "tools"
+  ],
+  "author": {
+    "name": "bwaynesu",
+    "email": "bwaynesu.dev@gmail.com",
+    "url": "https://bwaynesu.github.io/portfolio/"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bwaynesu/BComponentComparator.git"
+  },
+  "dependencies": {
+  },
+  "documentationUrl": "https://github.com/bwaynesu/BComponentComparator",
+  "changelogUrl": "https://github.com/bwaynesu/BComponentComparator/Project/Assets/BComponentComparator/CHANGELOG.md"
+}

@@ -1,8 +1,8 @@
 using NUnit.Framework;
-using UnityEngine;
 using UnityEditor;
+using UnityEngine;
 
-namespace BComponentComparator.Editor.Tests
+namespace BTools.BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for DragDropHandler validation logic
@@ -119,7 +119,7 @@ namespace BComponentComparator.Editor.Tests
             // Arrange - Create a temporary prefab
             testPrefab = new GameObject("TestPrefab");
             testPrefab.AddComponent<Rigidbody>();
-            
+
             string prefabPath = "Assets/TestPrefab.prefab";
             testPrefab = PrefabUtility.SaveAsPrefabAsset(testPrefab, prefabPath);
 

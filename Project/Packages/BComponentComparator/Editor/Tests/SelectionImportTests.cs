@@ -1,9 +1,8 @@
 using NUnit.Framework;
-using UnityEngine;
 using UnityEditor;
-using UnityEngine.UIElements;
+using UnityEngine;
 
-namespace BComponentComparator.Editor.Tests
+namespace BTools.BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for Selection Import functionality

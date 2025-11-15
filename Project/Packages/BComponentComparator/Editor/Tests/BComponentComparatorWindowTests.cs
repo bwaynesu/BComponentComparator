@@ -1,11 +1,8 @@
 using NUnit.Framework;
-using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
-using UnityEngine.TestTools;
-using System.Collections;
 
-namespace BComponentComparator.Editor.Tests
+namespace BTools.BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for BComponentComparatorWindow

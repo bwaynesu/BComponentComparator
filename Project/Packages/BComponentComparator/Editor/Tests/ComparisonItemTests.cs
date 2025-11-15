@@ -1,8 +1,7 @@
 using NUnit.Framework;
 using UnityEngine;
-using UnityEditor;
 
-namespace BComponentComparator.Editor.Tests
+namespace BTools.BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for ComparisonItem data model

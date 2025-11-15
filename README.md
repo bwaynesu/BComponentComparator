@@ -1,5 +1,11 @@
 # BComponentComparator
 
+[![Release Version](https://img.shields.io/github/v/release/bwaynesu/BComponentComparator?include_prereleases)](https://github.com/bwaynesu/BComponentComparator/releases) 
+[![Release Date](https://img.shields.io/github/release-date/bwaynesu/BComponentComparator.svg)](https://github.com/bwaynesu/BComponentComparator/releases)  
+[![Unity Version](https://img.shields.io/badge/Unity-2022.3%2B-blue.svg?style=flat&logo=unity)](https://unity3d.com/get-unity/download) 
+[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE) 
+[![Twitter](https://img.shields.io/twitter/follow/bwaynesu.svg?label=Follow&style=social)](https://x.com/intent/follow?screen_name=bwaynesu)
+
 A Unity Editor tool for comparing multiple Unity objects side-by-side in a single window.
 
 ## Features

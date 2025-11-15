@@ -1,10 +1,9 @@
 using NUnit.Framework;
-using UnityEngine;
-using UnityEditor;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.UIElements;
 
-namespace BComponentComparator.Editor.Tests
+namespace BTools.BComponentComparator.Editor.Tests
 {
     /// <summary>
     /// Tests for InspectorColumnController
@@ -106,7 +105,7 @@ namespace BComponentComparator.Editor.Tests
             // Arrange
             var item1 = new ComparisonItem(testObject1, typeof(Rigidbody));
             var item2 = new ComparisonItem(testObject2, typeof(Rigidbody));
-            
+
             // Destroy testObject2 to make item2 invalid
             Object.DestroyImmediate(testObject2);
             testObject2 = null;
