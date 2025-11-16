@@ -287,12 +287,26 @@ namespace BTools.BComponentComparator.Editor
             // Sync Unity Selection
             if (selectedObjects.Count > 0)
             {
-                Selection.objects = selectedObjects.ToArray();
+                // Convert Components to their GameObjects for Selection
+                var compToGoSelectedObjects = new List<UnityEngine.Object>();
+                foreach (var obj in selectedObjects)
+                {
+                    if (obj is Component comp)
+                    {
+                        compToGoSelectedObjects.Add(comp.gameObject);
+                    }
+                    else
+                    {
+                        compToGoSelectedObjects.Add(obj);
+                    }
+                }
+
+                Selection.objects = compToGoSelectedObjects.ToArray();
 
                 // Ping the first selected object to highlight it in Project window
-                if (selectedObjects.Count == 1)
+                if (compToGoSelectedObjects.Count == 1)
                 {
-                    EditorGUIUtility.PingObject(selectedObjects[0]);
+                    EditorGUIUtility.PingObject(compToGoSelectedObjects[0]);
                 }
             }
 
