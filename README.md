@@ -118,12 +118,14 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 4. **Manage settings** in `Edit > Project Settings > BComponentComparator`
 
 **Pre-configured types**:
-| Type               | Display Mode         |
-|--------------------|----------------------|
-| `Texture2D`        | `Editor`             |
-| `Font`             | `Editor`             |
-| `InputActionAsset` | `Editor`             |
-| `Shader`           | `EditorThenElement`  |
+| Type                      | Display Mode         |
+|---------------------------|----------------------|
+| `DefaultAsset`            | `Editor`             |
+| `Texture2D`               | `Editor`             |
+| `Font`                    | `Editor`             |
+| `AssemblyDefinitionAsset` | `Editor`             |
+| `InputActionAsset`        | `Editor`             |
+| `Shader`                  | `EditorThenElement`  |
 
 #### Removing Items
 - Hover over a list item to reveal the × button, click to remove

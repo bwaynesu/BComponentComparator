@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEditor;
+using UnityEditorInternal;
 using UnityEngine;
 
 namespace BTools.BComponentComparator.Editor
@@ -30,10 +31,12 @@ namespace BTools.BComponentComparator.Editor
         [SerializeField]
         private List<TypeDisplayModeEntry> customModes = new()
         {
+            new TypeDisplayModeEntry(GetTypeFullName(typeof(DefaultAsset)), InspectorDisplayMode.Editor),
             new TypeDisplayModeEntry(GetTypeFullName(typeof(Texture2D)), InspectorDisplayMode.Editor),
             new TypeDisplayModeEntry(GetTypeFullName(typeof(Font)), InspectorDisplayMode.Editor),
-            new TypeDisplayModeEntry(GetTypeFullName(typeof(Shader)), InspectorDisplayMode.EditorThenElement),
+            new TypeDisplayModeEntry(GetTypeFullName(typeof(AssemblyDefinitionAsset)), InspectorDisplayMode.Editor),
             new TypeDisplayModeEntry("UnityEngine.InputSystem.InputActionAsset, Unity.InputSystem", InspectorDisplayMode.Editor),
+            new TypeDisplayModeEntry(GetTypeFullName(typeof(Shader)), InspectorDisplayMode.EditorThenElement),
         };
 
         /// <summary>
