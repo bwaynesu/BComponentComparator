@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEditor.Animations;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -235,18 +234,7 @@ namespace BTools.BComponentComparator.Editor
             var contentContainer = new VisualElement();
             contentContainer.AddToClassList(inspectorContentClassName);
 
-            // Check if object requires IMGUI rendering
-            if (RequiresIMGUI(item))
-            {
-                CreateIMGUIInspector(item, contentContainer);
-            }
-            else
-            {
-                // Create InspectorElement for UIElements-compatible types
-                var inspector = new InspectorElement();
-                inspector.Bind(item.SerializedObject);
-                contentContainer.Add(inspector);
-            }
+            CreateInspector(item, contentContainer);
 
             column.Add(contentContainer);
 
@@ -277,39 +265,11 @@ namespace BTools.BComponentComparator.Editor
         }
 
         /// <summary>
-        /// Check if the object requires IMGUI rendering instead of UIElements
-        /// </summary>
-        /// <param name="item">ComparisonItem to check</param>
-        /// <returns>True if IMGUI is required</returns>
-        private bool RequiresIMGUI(ComparisonItem item)
-        {
-            if (item?.SerializedObject?.targetObject == null)
-            {
-                return false;
-            }
-
-            var targetObject = item.SerializedObject.targetObject;
-
-            // Types that typically require IMGUI rendering
-            // Material, Shader, Texture, and some other asset types have custom IMGUI inspectors
-            return targetObject is Material
-                || targetObject is Shader
-                || targetObject is Texture
-                || targetObject is Texture2D
-                || targetObject is Texture3D
-                || targetObject is RenderTexture
-                || targetObject is Cubemap
-                || targetObject is ComputeShader
-                || targetObject is AnimationClip
-                || targetObject is AnimatorController;
-        }
-
-        /// <summary>
-        /// Create an IMGUI-based inspector for objects that don't render properly with InspectorElement
+        /// Create InspectorElement for a ComparisonItem
         /// </summary>
         /// <param name="item">ComparisonItem to display</param>
         /// <param name="container">Container to add the inspector to</param>
-        private void CreateIMGUIInspector(ComparisonItem item, VisualElement container)
+        private void CreateInspector(ComparisonItem item, VisualElement container)
         {
             // Destroy previous editor if exists
             if (itemEditorMap.TryGetValue(item, out var existingEditor) && existingEditor != null)
@@ -317,30 +277,47 @@ namespace BTools.BComponentComparator.Editor
                 UnityEngine.Object.DestroyImmediate(existingEditor);
             }
 
-            // Create editor for the target object
-            var editor = UnityEditor.Editor.CreateEditor(item.SerializedObject.targetObject);
-            if (editor == null)
+            var path = AssetDatabase.GetAssetPath(item.TargetObject);
+            var importer = AssetImporter.GetAtPath(path);
+
+            UnityEditor.Editor editor = null;
+            IMGUIContainer imguiContainer = null;
+            InspectorElement inspectorElement = null;
+
+            switch (item.TargetObject)
             {
-                // Fallback to regular InspectorElement if editor creation fails
-                var fallbackInspector = new InspectorElement();
-                fallbackInspector.Bind(item.SerializedObject);
-                container.Add(fallbackInspector);
-                return;
+                case Texture:
+                case Font:
+                    var isInheritedImporter = (importer != null) && (importer.GetType() != typeof(AssetImporter));
+                    editor = UnityEditor.Editor.CreateEditor(isInheritedImporter ? importer : item.TargetObject);
+                    imguiContainer = new IMGUIContainer(() =>
+                    {
+                        editor.DrawHeader();
+                        EditorGUILayout.BeginVertical();
+                        editor.OnInspectorGUI();
+                        EditorGUILayout.EndVertical();
+                    });
+                    break;
+
+                default:
+                    editor = UnityEditor.Editor.CreateEditor(item.TargetObject);
+                    imguiContainer = editor ? new IMGUIContainer(editor.DrawHeader) : null;
+                    inspectorElement = new InspectorElement();
+                    inspectorElement.Bind(item.SerializedObject);
+                    break;
             }
 
-            // Cache the editor for cleanup later
-            itemEditorMap[item] = editor;
-
-            // Create IMGUI container
-            var imguiContainer = new IMGUIContainer(() =>
+            if (imguiContainer != null)
             {
-                editor.DrawHeader();
-                EditorGUILayout.BeginVertical();
-                editor.OnInspectorGUI();
-                EditorGUILayout.EndVertical();
-            });
+                container.Add(imguiContainer);
+            }
 
-            container.Add(imguiContainer);
+            if (inspectorElement != null)
+            {
+                container.Add(inspectorElement);
+            }
+
+            itemEditorMap[item] = editor;
         }
     }
 }
