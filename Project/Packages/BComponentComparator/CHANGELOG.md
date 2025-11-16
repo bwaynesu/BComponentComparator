@@ -1,3 +1,15 @@
+# [1.3.0](https://github.com/bwaynesu/BComponentComparator/compare/1.2.0...1.3.0) (2025-11-16)
+
+
+### Bug Fixes
+
+* select gameobject instead of component ([d6c07a0](https://github.com/bwaynesu/BComponentComparator/commit/d6c07a022aa40a6b76c2de066774f6decdf38e54))
+
+
+### Features
+
+* add more default custom modes ([ed3bd68](https://github.com/bwaynesu/BComponentComparator/commit/ed3bd682f1b27aa8235ee184a77990539981a2b5))
+
 # [1.2.0](https://github.com/bwaynesu/BComponentComparator/compare/1.1.0...1.2.0) (2025-11-16)
 
 
