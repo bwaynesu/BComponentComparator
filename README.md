@@ -32,6 +32,8 @@ BComponentComparator gives you a parallel view of multiple Inspectors, letting y
 
 Native Inspector rendering means everything just works — Undo/Redo, Copy/Paste, Custom Inspectors, and all field types.
 
+https://github.com/user-attachments/assets/caa12751-699b-432d-bc69-6eb8385326be
+
 ## Features
 
 - **Side-by-Side Comparison**: View multiple Unity Inspectors in parallel columns for easy visual comparison
