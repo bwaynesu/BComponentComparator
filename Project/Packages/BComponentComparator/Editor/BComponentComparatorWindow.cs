@@ -16,6 +16,8 @@ namespace BTools.BComponentComparator.Editor
         // --- Left Panel Class Names ---
         private static readonly string controlPanelClassName = "control-panel";
         private static readonly string componentTypeFieldClassName = "component-type-field";
+        private static readonly string displayModeRowClassName = "display-mode-row";
+        private static readonly string displayModeLabelClassName = "display-mode-label";
         private static readonly string widthControlRowClassName = "width-control-row";
         private static readonly string widthLabelClassName = "width-label";
         private static readonly string widthSliderClassName = "width-slider";
@@ -54,6 +56,7 @@ namespace BTools.BComponentComparator.Editor
         private Label componentTypeLabel;
         private Button clearListButton;
         private SliderInt widthSlider;
+        private EnumField displayModeField;
 
         [MenuItem("Window/BTools/BComponentComparator")]
         public static void ShowWindow()
@@ -135,6 +138,22 @@ namespace BTools.BComponentComparator.Editor
             componentTypeLabel.style.color = new StyleColor(new Color(0.6f, 0.6f, 0.6f));
             componentTypeField.Add(componentTypeLabel);
             leftPanel.Add(componentTypeField);
+
+            // Display Mode controls
+            var displayModeRow = new VisualElement();
+            displayModeRow.AddToClassList(displayModeRowClassName);
+
+            var displayModeLabel = new Label("Display Mode:");
+            displayModeLabel.AddToClassList(displayModeLabelClassName);
+            displayModeRow.Add(displayModeLabel);
+
+            displayModeField = new EnumField("", InspectorDisplayMode.Element);
+            displayModeField.style.flexGrow = 1;
+            displayModeField.SetEnabled(false);
+            displayModeField.RegisterValueChangedCallback(OnDisplayModeChanged);
+            displayModeRow.Add(displayModeField);
+
+            leftPanel.Add(displayModeRow);
 
             // Column width controls - label and slider in one row
             var widthRow = new VisualElement();
@@ -307,16 +326,11 @@ namespace BTools.BComponentComparator.Editor
             componentTypeLabel.text = componentType.Name;
             componentTypeLabel.style.color = Color.white;
 
-            // Set required type for list controller
             listController?.SetRequiredType(componentType);
-
-            // Add dropped object to list
+            UpdateDisplayModeField();
             listController?.AddItem(droppedObject);
-
-            // Enable buttons
             ValidateButtonStates();
 
-            // Save state
             SaveState();
         }
 
@@ -345,6 +359,37 @@ namespace BTools.BComponentComparator.Editor
         private void OnListSelectionChanged(List<UnityEngine.Object> selectedObjects)
         {
             inspectorController?.HighlightColumns(selectedObjects);
+            UpdateDisplayModeField();
+        }
+
+        private void UpdateDisplayModeField()
+        {
+            // If no component type is specified, disable the field
+            if (currentComponentType == null)
+            {
+                displayModeField.SetEnabled(false);
+                displayModeField.SetValueWithoutNotify(InspectorDisplayMode.Element);
+                return;
+            }
+
+            // Enable the field and show current mode for the current component type
+            displayModeField.SetEnabled(true);
+            var currentMode = InspectorDisplaySettings.instance.GetDisplayMode(currentComponentType);
+            displayModeField.SetValueWithoutNotify(currentMode);
+        }
+
+        private void OnDisplayModeChanged(ChangeEvent<Enum> evt)
+        {
+            if (currentComponentType == null)
+                return;
+
+            var newMode = (InspectorDisplayMode)evt.newValue;
+
+            // Save the new mode for the current component type
+            InspectorDisplaySettings.instance.SetDisplayMode(currentComponentType, newMode);
+
+            // Rebuild the inspector columns to apply the new mode
+            RefreshInspectorColumns();
         }
 
         private void ValidateButtonStates()

@@ -277,34 +277,36 @@ namespace BTools.BComponentComparator.Editor
                 UnityEngine.Object.DestroyImmediate(existingEditor);
             }
 
-            var path = AssetDatabase.GetAssetPath(item.TargetObject);
-            var importer = AssetImporter.GetAtPath(path);
+            // Get display mode from settings
+            var targetObj = item.SerializedObject.targetObject;
+            var displayMode = InspectorDisplaySettings.instance.GetDisplayMode(targetObj.GetType());
 
             UnityEditor.Editor editor = null;
             IMGUIContainer imguiContainer = null;
             InspectorElement inspectorElement = null;
 
-            switch (item.TargetObject)
+            if (displayMode == InspectorDisplayMode.Editor)
             {
-                case Texture:
-                case Font:
-                    var isInheritedImporter = (importer != null) && (importer.GetType() != typeof(AssetImporter));
-                    editor = UnityEditor.Editor.CreateEditor(isInheritedImporter ? importer : item.TargetObject);
-                    imguiContainer = new IMGUIContainer(() =>
-                    {
-                        editor.DrawHeader();
-                        EditorGUILayout.BeginVertical();
-                        editor.OnInspectorGUI();
-                        EditorGUILayout.EndVertical();
-                    });
-                    break;
+                CreateEditorContainer(targetObj, out editor, out imguiContainer);
+            }
+            else if (displayMode == InspectorDisplayMode.EditorThenElement)
+            {
+                // First use Editor, then InspectorElement for remaining properties
+                CreateEditorContainer(targetObj, out editor, out imguiContainer, bottomPadding: 10f);
+                inspectorElement = new InspectorElement();
+                inspectorElement.Bind(item.SerializedObject);
+            }
+            else
+            {
+                // Default mode: Use InspectorElement
 
-                default:
-                    editor = UnityEditor.Editor.CreateEditor(item.TargetObject);
-                    imguiContainer = editor ? new IMGUIContainer(editor.DrawHeader) : null;
-                    inspectorElement = new InspectorElement();
-                    inspectorElement.Bind(item.SerializedObject);
-                    break;
+                // Draw header using Editor
+                editor = UnityEditor.Editor.CreateEditor(targetObj);
+                imguiContainer = editor ? new IMGUIContainer(editor.DrawHeader) : null;
+
+                // Create InspectorElement
+                inspectorElement = new InspectorElement();
+                inspectorElement.Bind(item.SerializedObject);
             }
 
             if (imguiContainer != null)
@@ -318,6 +320,50 @@ namespace BTools.BComponentComparator.Editor
             }
 
             itemEditorMap[item] = editor;
+        }
+
+        /// <summary>
+        /// Create Editor and IMGUIContainer for an object
+        /// </summary>
+        /// <param name="targetObj">Target Unity Object</param>
+        /// <param name="editor">Output Editor instance</param>
+        /// <param name="imguiContainer">Output IMGUIContainer instance</param>
+        /// <param name="bottomPadding">Optional bottom padding</param>
+        private static void CreateEditorContainer(
+            UnityEngine.Object targetObj,
+            out UnityEditor.Editor editor, 
+            out IMGUIContainer imguiContainer,
+            float bottomPadding = 0)
+        {
+            var path = AssetDatabase.GetAssetPath(targetObj);
+            var importer = AssetImporter.GetAtPath(path);
+
+            // If the importer is a derived type, use it; otherwise use the target object
+            var isInheritedImporter = (importer != null) && (importer.GetType() != typeof(AssetImporter));
+            var newEditor = UnityEditor.Editor.CreateEditor(isInheritedImporter ? importer : targetObj);
+
+            imguiContainer = new IMGUIContainer(() =>
+            {
+                if (newEditor == null || newEditor.target == null)
+                {
+                    return;
+                }
+
+                newEditor.DrawHeader();
+
+                EditorGUILayout.BeginVertical();
+                {
+                    newEditor.OnInspectorGUI();
+
+                    if (bottomPadding > 0)
+                    {
+                        EditorGUILayout.Space(bottomPadding);
+                    }
+                }
+                EditorGUILayout.EndVertical();
+            });
+
+            editor = newEditor;
         }
     }
 }
