@@ -105,6 +105,26 @@ Copy-paste Component values across multiple objects in seconds instead of minute
 #### Adjusting Column Width
 - Use the "Inspector Width" slider to adjust all column widths simultaneously
 
+#### Customizing Display Mode
+
+If an Inspector displays incorrectly or appears empty compared to Unity's default Inspector:
+
+1. **Select the object type** by dragging it to the top field
+2. **Try different display modes** using the "Display Mode" dropdown:
+   - **Element**: Default rendering (fastest, but may miss some asset types)
+   - **Editor**: Full IMGUI rendering (best compatibility for Materials, Fonts, Textures)
+   - **EditorThenElement**: Hybrid approach (useful for Shaders and complex assets)
+3. **Settings persist automatically** — once configured, the mode is remembered for that object type
+4. **Manage settings** in `Edit > Project Settings > BComponentComparator`
+
+**Pre-configured types**:
+| Type               | Display Mode         |
+|--------------------|----------------------|
+| `Texture2D`        | `Editor`             |
+| `Font`             | `Editor`             |
+| `InputActionAsset` | `Editor`             |
+| `Shader`           | `EditorThenElement`  |
+
 #### Removing Items
 - Hover over a list item to reveal the × button, click to remove
 - Or hover over an Inspector column header to reveal the × button
@@ -112,14 +132,7 @@ Copy-paste Component values across multiple objects in seconds instead of minute
 
 ## Supported Types
 
-- **GameObject Components**: Any Component attached to GameObjects in the scene
-- **ScriptableObjects**: Any ScriptableObject asset in the project
-- **Materials**: Material assets in the project
-- **Textures**: Texture2D, RenderTexture, and other texture assets
-- **Audio**: AudioClip assets
-- **Animations**: AnimationClip, AnimatorController, and related assets
-- **Shaders**: Shader and ShaderGraph assets
-- **And More**: Almost any Unity object type that can be displayed in the Inspector
+- Almost any Unity object type that can be displayed in the Inspector
 - **Not Supported**: Prefab assets (drag Prefab instances from the scene instead)
 
 ## Requirements
@@ -131,6 +144,7 @@ Copy-paste Component values across multiple objects in seconds instead of minute
 
 - Prefab assets are not supported (use Prefab instances in the scene instead)
 - Very large numbers of columns (50+) may impact performance
+- Some asset types may require Display Mode adjustment for proper rendering (see Display Mode Customization above)
 
 ## License
 

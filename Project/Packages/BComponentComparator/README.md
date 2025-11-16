@@ -20,14 +20,21 @@ Compare multiple Unity objects side-by-side with native Inspector editing.
 
 ## Supported Types
 
-- GameObject Components
-- ScriptableObjects
-- Materials, Textures, Audio Clips
-- AnimationClip, AnimatorController
-- Shaders and ShaderGraphs
 - Almost any Inspector-compatible Unity object
 
 **Note**: Prefab assets are not supported. Use scene instances instead.
+
+## Display Mode Customization
+
+If an Inspector displays incorrectly or appears empty, you can customize how it renders:
+
+1. **Change Display Mode**: Use the "Display Mode" dropdown in the left panel
+2. **Available Modes**:
+   - **Element**: Default rendering using InspectorElement (fastest)
+   - **Editor**: Full IMGUI rendering (best compatibility)
+   - **EditorThenElement**: Hybrid mode combining both approaches
+3. **Auto-Save**: Settings are saved per object type and persist across sessions
+4. **Project Settings**: View and manage all custom modes in `Edit > Project Settings > BComponentComparator`
 
 ## Tips
 
