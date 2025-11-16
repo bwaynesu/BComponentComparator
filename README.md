@@ -9,7 +9,7 @@
 **Stop switching between Inspector windows.**   
 Compare and edit multiple Unity objects side-by-side, spot inconsistencies instantly, and maintain quality across your entire project — all in a single, synchronized view.
 
-<img width="700" alt="Preview" src="https://github.com/user-attachments/assets/05294e56-962d-4598-9ddb-dbe10c4963f0" />
+<img width="700" alt="Preview" src="https://github.com/user-attachments/assets/73963212-5bbf-473a-a980-e4fd3f1f8dd7" />
 
 ## Why BComponentComparator?
 
