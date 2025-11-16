@@ -1,3 +1,11 @@
+# [1.2.0](https://github.com/bwaynesu/BComponentComparator/compare/1.1.0...1.2.0) (2025-11-16)
+
+
+### Features
+
+* multi display mode support ([a9a0d4e](https://github.com/bwaynesu/BComponentComparator/commit/a9a0d4e14c27c6bbaaefad580d5960d41ea2c36a))
+* texture, font type support ([7c2d5ad](https://github.com/bwaynesu/BComponentComparator/commit/7c2d5adb5936e1b8651a965b9c633b352e0ec7e8))
+
 # [1.1.0](https://github.com/bwaynesu/BComponentComparator/compare/1.0.2...1.1.0) (2025-11-15)
 
 
