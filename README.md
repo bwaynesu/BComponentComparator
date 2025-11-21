@@ -42,7 +42,7 @@ https://github.com/user-attachments/assets/caa12751-699b-432d-bc69-6eb8385326be
 - **Native Inspector Support**: Uses Unity's native Inspector rendering, ensuring full editing capabilities including:
   - Undo/Redo
   - Copy/Paste Component Values
-  - Custom Inspectors
+  - Custom Inspectors (including third-party tools like Odin Inspector)
   - All field types and widgets
 - **Reorderable List**: Drag items in the list to reorder, with Inspector columns updating in real-time
 - **Multi-Selection Sync**: Select multiple items in the list to highlight them in the Unity Editor
@@ -147,8 +147,28 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 ## Known Limitations
 
 - Prefab assets are not supported (use Prefab instances in the scene instead)
-- Very large numbers of columns (50+) may impact performance
 - Some asset types may require Display Mode adjustment for proper rendering (see Display Mode Customization above)
+
+## Known Issues
+
+We are actively investigating the following issues:
+
+- **Field Overflow**: Some fields may overflow beyond the column width (e.g., Material Color fields with expanded color picker)
+- **FBX Recognition**: FBX files are currently recognized as GameObjects and cannot be dragged directly (workaround: use Display Mode settings for ModelImporter)
+
+## Planned Features
+
+Features we are working on adding:
+
+- **Bulk Type Selection**: When dragging multiple objects to specify type, add all selected objects to the list instead of just one
+- **Context Menu Integration**: Add "Add to Comparator" option in Component right-click menu that automatically opens the Comparator window
+- **Inheritance Support**: Support dragging derived class instances into the list after specifying a base type
+
+## Under Evaluation
+
+Features being considered for future releases:
+
+- **Session Persistence**: Save and load previous comparison sessions (type and list items)
 
 ## License
 
