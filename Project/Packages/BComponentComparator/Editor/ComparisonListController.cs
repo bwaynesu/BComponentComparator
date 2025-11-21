@@ -117,8 +117,8 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
-            // If GameObject, extract the required Component
-            if (obj is GameObject go)
+            // If GameObject and required type is Component, extract the Component
+            if (obj is GameObject go && typeof(Component).IsAssignableFrom(requiredType))
             {
                 obj = go.GetComponent(requiredType);
             }
@@ -159,8 +159,8 @@ namespace BTools.BComponentComparator.Editor
             {
                 var curObj = obj;
 
-                // If GameObject, extract the required Component
-                if (curObj is GameObject go)
+                // If GameObject and required type is Component, extract the Component
+                if (curObj is GameObject go && typeof(Component).IsAssignableFrom(requiredType))
                 {
                     curObj = go.GetComponent(requiredType);
                 }

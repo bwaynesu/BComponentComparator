@@ -114,7 +114,7 @@ namespace BTools.BComponentComparator.Editor.Tests
         }
 
         [Test]
-        public void ValidateObject_WithPrefabAsset_ReturnsFalse()
+        public void ValidateObject_WithPrefabAsset_ReturnsTrue()
         {
             // Arrange - Create a temporary prefab
             testPrefab = new GameObject("TestPrefab");
@@ -127,7 +127,7 @@ namespace BTools.BComponentComparator.Editor.Tests
             bool isValid = DragDropHandler.IsValidObject(testPrefab, typeof(Rigidbody));
 
             // Assert
-            Assert.IsFalse(isValid);
+            Assert.IsTrue(isValid);
 
             // Cleanup
             AssetDatabase.DeleteAsset(prefabPath);

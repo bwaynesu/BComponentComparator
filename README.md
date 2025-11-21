@@ -137,7 +137,6 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 ## Supported Types
 
 - Almost any Unity object type that can be displayed in the Inspector
-- **Not Supported**: Prefab assets (drag Prefab instances from the scene instead)
 
 ## Requirements
 
@@ -146,7 +145,6 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 
 ## Known Limitations
 
-- Prefab assets are not supported (use Prefab instances in the scene instead)
 - Some asset types may require Display Mode adjustment for proper rendering (see Display Mode Customization above)
 
 ## Known Issues
@@ -154,7 +152,6 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 We are actively investigating the following issues:
 
 - **Field Overflow**: Some fields may overflow beyond the column width (e.g., Material Color fields with expanded color picker)
-- **FBX Recognition**: FBX files are currently recognized as GameObjects and cannot be dragged directly (workaround: use Display Mode settings for ModelImporter)
 
 ## Planned Features
 

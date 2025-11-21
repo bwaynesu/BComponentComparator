@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using UnityEditor;
 using UnityEngine;
@@ -9,7 +10,6 @@ namespace BTools.BComponentComparator.Editor
     /// <summary>
     /// Static utility class for handling drag-drop operations and validation.
     /// Provides validation for Component types and objects (GameObjects, ScriptableObjects, Materials, etc).
-    /// Rejects Prefab assets per requirements.
     /// </summary>
     public static class DragDropHandler
     {
@@ -20,6 +20,11 @@ namespace BTools.BComponentComparator.Editor
             public EventCallback<DragLeaveEvent> OnDragLeave;
             public EventCallback<DragExitedEvent> OnDragExited;
         }
+
+        private static readonly HashSet<string> excludedImporterNames = new()
+        {
+            "PrefabImporter",
+        };
 
         private static readonly string dragHoverClassName = "drag-hover";
         private static readonly string dragRejectedClassName = "drag-rejected";
@@ -33,7 +38,7 @@ namespace BTools.BComponentComparator.Editor
         /// <returns>True if type extracted successfully</returns>
         public static bool TryExtractedType(UnityEngine.Object obj, out Type type)
         {
-            type = null;
+            type = (obj != null) ? obj.GetType() : null;
 
             if (obj == null)
             {
@@ -51,11 +56,23 @@ namespace BTools.BComponentComparator.Editor
                 }
             }
 
-            type = obj.GetType();
+            if (obj is Component component)
+            {
+                type = component.GetType();
+                return true;
+            }
+
+            // Check for inherited AssetImporter (e.g., ModelImporter for FBX)
+            if (Utility.TryGetInheritedImporter(obj, out var importerType))
+            {
+                type = importerType;
+                return !excludedImporterNames.Contains(type.Name);
+            }
 
             // Can't compare GameObject type directly
             if (typeof(GameObject).IsAssignableFrom(type))
             {
+                type = null;
                 return false;
             }
 
@@ -64,7 +81,6 @@ namespace BTools.BComponentComparator.Editor
 
         /// <summary>
         /// Validate if the dropped object matches the required Component type.
-        /// Rejects Prefab assets.
         /// </summary>
         /// <param name="obj">Dropped object</param>
         /// <param name="requiredType">Required Component/asset type</param>
@@ -76,9 +92,20 @@ namespace BTools.BComponentComparator.Editor
                 return false;
             }
 
-            // Reject Prefab assets (no warning here, will show on actual drop)
-            if (PrefabUtility.IsPartOfPrefabAsset(obj))
+            if (IsValidAsset(obj, requiredType))
             {
+                return true;
+            }
+
+            // If required type is an AssetImporter, validate by importer type
+            if (typeof(AssetImporter).IsAssignableFrom(requiredType))
+            {
+                if (Utility.TryGetInheritedImporter(obj, out Type importerType))
+                {
+                    return !excludedImporterNames.Contains(importerType.Name) && 
+                        requiredType.IsAssignableFrom(importerType);
+                }
+
                 return false;
             }
 
@@ -88,7 +115,7 @@ namespace BTools.BComponentComparator.Editor
                 return IsValidGameObject(go, requiredType);
             }
 
-            return IsValidAsset(obj, requiredType);
+            return false;
         }
 
         /// <summary>
@@ -241,19 +268,6 @@ namespace BTools.BComponentComparator.Editor
             }
 
             var draggedObject = DragAndDrop.objectReferences[0];
-
-            // Check for Prefab and show warning on actual drop
-            if (PrefabUtility.IsPartOfPrefabAsset(draggedObject))
-            {
-                Debug.LogWarning("Prefabs are not supported. Please drag the Prefab instance to the scene first.");
-
-                // Remove visual feedback
-                target.RemoveFromClassList(dragHoverClassName);
-                target.RemoveFromClassList(dragRejectedClassName);
-                evt.StopPropagation();
-
-                return;
-            }
 
             var isValid = validator(draggedObject);
             if (isValid)

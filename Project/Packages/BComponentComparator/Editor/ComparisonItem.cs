@@ -49,9 +49,9 @@ namespace BTools.BComponentComparator.Editor
 
             TargetObject = targetObject;
 
-            if (targetObject is GameObject go)
+            if (targetObject is GameObject go && typeof(Component).IsAssignableFrom(componentType))
             {
-                // Extract Component from GameObject
+                // Extract Component from GameObject (only if componentType is actually a Component)
                 TargetComponent = go.GetComponent(componentType);
 
                 if (TargetComponent == null)
@@ -64,9 +64,33 @@ namespace BTools.BComponentComparator.Editor
             }
             else if (componentType.IsAssignableFrom(targetObject.GetType()))
             {
-                // ScriptableObject or Material - compare the asset itself
+                // ScriptableObject, Material, or other assets - compare the asset itself
                 SerializedObject = new SerializedObject(targetObject);
                 DisplayName = targetObject.name;
+            }
+            else if (typeof(AssetImporter).IsAssignableFrom(componentType))
+            {
+                // For AssetImporter types (e.g., ModelImporter for FBX)
+                // Create SerializedObject from the importer
+
+                var path = AssetDatabase.GetAssetPath(targetObject);
+                if (!string.IsNullOrEmpty(path))
+                {
+                    var importer = AssetImporter.GetAtPath(path);
+                    if (importer != null && componentType.IsAssignableFrom(importer.GetType()))
+                    {
+                        SerializedObject = new SerializedObject(importer);
+                        DisplayName = targetObject.name;
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Asset '{targetObject.name}' does not have importer of type '{componentType.Name}'");
+                    }
+                }
+                else
+                {
+                    throw new ArgumentException($"Asset '{targetObject.name}' has no valid asset path");
+                }
             }
             else
             {

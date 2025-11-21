@@ -22,8 +22,6 @@ Compare multiple Unity objects side-by-side with native Inspector editing.
 
 - Almost any Inspector-compatible Unity object
 
-**Note**: Prefab assets are not supported. Use scene instances instead.
-
 ## Display Mode Customization
 
 If an Inspector displays incorrectly or appears empty, you can customize how it renders:
