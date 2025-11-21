@@ -1,3 +1,10 @@
+# [1.4.0](https://github.com/bwaynesu/BComponentComparator/compare/1.3.0...1.4.0) (2025-11-21)
+
+
+### Features
+
+* fbx & prefab component support ([60e414b](https://github.com/bwaynesu/BComponentComparator/commit/60e414ba6770e0ec765ff3c14dffe64e0c1a2e19))
+
 # [1.3.0](https://github.com/bwaynesu/BComponentComparator/compare/1.2.0...1.3.0) (2025-11-16)
 
 
