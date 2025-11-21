@@ -1,3 +1,10 @@
+# [1.5.0](https://github.com/bwaynesu/BComponentComparator/compare/1.4.0...1.5.0) (2025-11-21)
+
+
+### Features
+
+* support mesh type ([af53612](https://github.com/bwaynesu/BComponentComparator/commit/af53612e01f31522b2ffad7b552c3e2baac76369))
+
 # [1.4.0](https://github.com/bwaynesu/BComponentComparator/compare/1.3.0...1.4.0) (2025-11-21)
 
 
