@@ -56,26 +56,31 @@ namespace BTools.BComponentComparator.Editor
                 }
             }
 
+            // Component - use the component type directly
             if (obj is Component component)
             {
                 type = component.GetType();
                 return true;
             }
 
-            // Check for inherited AssetImporter (e.g., ModelImporter for FBX)
-            if (Utility.TryGetInheritedImporter(obj, out var importerType))
-            {
-                type = importerType;
-                return !excludedImporterNames.Contains(type.Name);
-            }
-
-            // Can't compare GameObject type directly
+            // Check if it's a GameObject before checking for importer
+            // GameObject needs special handling (either Component or Importer)
             if (typeof(GameObject).IsAssignableFrom(type))
             {
+                // For GameObject, check if it has an inherited AssetImporter (e.g., ModelImporter for FBX)
+                if (Utility.TryGetInheritedImporter(obj, out var importerType))
+                {
+                    type = importerType;
+                    return !excludedImporterNames.Contains(type.Name);
+                }
+                
+                // Regular GameObject without valid importer
                 type = null;
                 return false;
             }
 
+            // For other assets (Mesh, Material, Texture, etc.), use their own type
+            // Don't check for importer as these are valid comparison types themselves
             return true;
         }
 
