@@ -1,3 +1,17 @@
+# [1.6.0](https://github.com/bwaynesu/BComponentComparator/compare/1.5.0...1.6.0) (2025-11-22)
+
+
+### Bug Fixes
+
+* field overflow ([51eb6bc](https://github.com/bwaynesu/BComponentComparator/commit/51eb6bc6ecb395ff060364291bf9b79a80901a42))
+* update content container width when changed ([f794d8b](https://github.com/bwaynesu/BComponentComparator/commit/f794d8b08e495013188de6c1f6975f23c79496b9))
+
+
+### Features
+
+* bulk type selection support ([b5b3826](https://github.com/bwaynesu/BComponentComparator/commit/b5b3826200dd634c5c6f4624ade026c6126ac503))
+* display settings can reset to default ([a8b4d93](https://github.com/bwaynesu/BComponentComparator/commit/a8b4d93e570505f598981a6548f0c066d55b53de))
+
 # [1.5.0](https://github.com/bwaynesu/BComponentComparator/compare/1.4.0...1.5.0) (2025-11-21)
 
 
