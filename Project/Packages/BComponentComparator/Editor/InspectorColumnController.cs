@@ -333,7 +333,7 @@ namespace BTools.BComponentComparator.Editor
         /// <param name="bottomPadding">Optional bottom padding</param>
         private static void CreateEditorContainer(
             UnityEngine.Object targetObj,
-            out UnityEditor.Editor editor, 
+            out UnityEditor.Editor editor,
             out IMGUIContainer imguiContainer,
             float bottomPadding = 0)
         {

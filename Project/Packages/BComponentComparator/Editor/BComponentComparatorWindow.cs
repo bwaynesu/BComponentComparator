@@ -68,6 +68,9 @@ namespace BTools.BComponentComparator.Editor
 
         public void CreateGUI()
         {
+            // Clear existing content to prevent duplicate panels when CreateGUI is called multiple times
+            rootVisualElement.Clear();
+
             // Load USS stylesheet using relative path from script location
             var scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
             var scriptDirectory = Path.GetDirectoryName(scriptPath);
@@ -478,6 +481,36 @@ namespace BTools.BComponentComparator.Editor
             }
 
             ValidateButtonStates();
+        }
+
+        /// <summary>
+        /// Add a component from context menu (called by ComponentContextMenu)
+        /// </summary>
+        /// <param name="component">Component to add</param>
+        public void AddComponentFromContextMenu(Component component)
+        {
+            if (component == null)
+            {
+                return;
+            }
+
+            var componentType = component.GetType();
+
+            // If no type is set, or type is different, set the new type
+            if (currentComponentType == null || currentComponentType != componentType)
+            {
+                currentComponentType = componentType;
+                componentTypeLabel.text = componentType.Name;
+                componentTypeLabel.style.color = Color.white;
+
+                listController?.SetRequiredType(componentType);
+                UpdateDisplayModeField();
+            }
+
+            // Add the component to the list
+            listController?.AddItem(component);
+            ValidateButtonStates();
+            SaveState();
         }
     }
 }
