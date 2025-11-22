@@ -173,11 +173,20 @@ namespace BTools.BComponentComparator.Editor
         {
             columnWidth = width;
 
-            // Update all existing columns
+            // Update all existing columns and their content containers
             foreach (var column in inspectorColumns)
             {
                 column.style.width = columnWidth;
                 column.style.minWidth = columnWidth;
+                column.style.maxWidth = columnWidth;
+
+                // Update content container width
+                var contentContainer = column.Q(className: inspectorContentClassName);
+                if (contentContainer != null)
+                {
+                    contentContainer.style.width = columnWidth;
+                    contentContainer.style.maxWidth = columnWidth;
+                }
             }
         }
 
@@ -238,6 +247,7 @@ namespace BTools.BComponentComparator.Editor
             contentContainer.style.width = columnWidth; // Match column width
             contentContainer.style.maxWidth = columnWidth; // Prevent expansion
             contentContainer.style.overflow = Overflow.Hidden; // Clip overflowing content
+            contentContainer.style.paddingRight = 8;
 
             CreateInspector(item, contentContainer);
 
