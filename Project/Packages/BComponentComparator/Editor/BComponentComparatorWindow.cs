@@ -100,6 +100,15 @@ namespace BTools.BComponentComparator.Editor
             RestoreState();
         }
 
+        /// <summary>
+        /// Assigns a Component type from a given object
+        /// </summary>
+        /// <param name="obj"></param>
+        public void AssignTypeFromObject(UnityEngine.Object obj)
+        {
+            OnComponentTypeDrop(new UnityEngine.Object[] { obj });
+        }
+
         private void OnDisable()
         {
             UnregisterEventHandlers();
@@ -481,36 +490,6 @@ namespace BTools.BComponentComparator.Editor
             }
 
             ValidateButtonStates();
-        }
-
-        /// <summary>
-        /// Add a component from context menu (called by ComponentContextMenu)
-        /// </summary>
-        /// <param name="component">Component to add</param>
-        public void AddComponentFromContextMenu(Component component)
-        {
-            if (component == null)
-            {
-                return;
-            }
-
-            var componentType = component.GetType();
-
-            // If no type is set, or type is different, set the new type
-            if (currentComponentType == null || currentComponentType != componentType)
-            {
-                currentComponentType = componentType;
-                componentTypeLabel.text = componentType.Name;
-                componentTypeLabel.style.color = Color.white;
-
-                listController?.SetRequiredType(componentType);
-                UpdateDisplayModeField();
-            }
-
-            // Add the component to the list
-            listController?.AddItem(component);
-            ValidateButtonStates();
-            SaveState();
         }
     }
 }

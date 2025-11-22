@@ -8,33 +8,48 @@ namespace BTools.BComponentComparator.Editor
     /// </summary>
     public static class ComponentContextMenu
     {
-        private const string menuPath = "CONTEXT/Component/Add to Comparator";
-        private const int menuPriority = 1500;
+        private const string menuPath = "CONTEXT/Object/Add to Comparator";
+        private const int menuPriority = 49;
 
         [MenuItem(menuPath, false, menuPriority)]
         private static void AddToComparator(MenuCommand command)
         {
-            var component = command.context as Component;
-            if (component == null)
+            if (!TryExtractedObjectAndType(command.context, out var targetObject, out _))
             {
                 return;
             }
 
-            // Open or focus the Comparator window
             var window = EditorWindow.GetWindow<BComponentComparatorWindow>();
+
             window.titleContent = new GUIContent("BComponentComparator");
+
             window.Show();
             window.Focus();
-
-            // Add the component to the window
-            window.AddComponentFromContextMenu(component);
+            window.AssignTypeFromObject(targetObject);
         }
 
-        [MenuItem(menuPath, true)]
+        [MenuItem(menuPath, true, menuPriority)]
         private static bool ValidateAddToComparator(MenuCommand command)
         {
-            // Always enable the menu item for any Component
-            return command.context is Component;
+            return TryExtractedObjectAndType(command.context, out _, out _);
+        }
+
+        private static bool TryExtractedObjectAndType(
+            Object obj,
+            out Object targetObject,
+            out System.Type componentType)
+        {
+            targetObject = null;
+            componentType = null;
+
+            if (obj == null)
+            {
+                return false;
+            }
+
+            targetObject = (obj is AssetImporter importer) ? AssetDatabase.LoadAssetAtPath<Object>(importer.assetPath) : obj;
+
+            return DragDropHandler.TryExtractedType(targetObject, out componentType);
         }
     }
 }

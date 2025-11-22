@@ -43,11 +43,11 @@ https://github.com/user-attachments/assets/caa12751-699b-432d-bc69-6eb8385326be
   - All field types and widgets
 - **Flexible Object Selection**: Support for almost any Unity object type including Components, ScriptableObjects, Materials, Textures, Audio Clips, and more
 - **Inheritance Support**: Drag derived class instances into the list after specifying a base type (e.g., specify `Collider` and drag objects with `BoxCollider`, `SphereCollider`, etc.)
-- **Context Menu Integration**: Right-click any Component in the Inspector and select "Add to Comparator" to quickly add it to the comparison list
 - **Drag-and-Drop Interface**: Intuitive drag-and-drop to specify object type and add objects to compare
 - **Side-by-Side Comparison**: View multiple Unity Inspectors in parallel columns for easy visual comparison
 - **Reorderable List**: Drag items in the list to reorder, with Inspector columns updating in real-time
 - **Multi-Selection Sync**: Select multiple items in the list to highlight them in the Unity Editor
+- **Context Menu Integration**: Right-click any Component or asset in the Inspector and select "Add to Comparator" to quickly add it to the comparison list
 
 ## Real-World Use Cases
 
@@ -109,11 +109,11 @@ Copy-paste Component values across multiple objects in seconds instead of minute
 - Use the "Inspector Width" slider to adjust all column widths simultaneously
 
 #### Using Context Menu
-- Right-click any Component in the Inspector
+- Right-click any Component or asset in the Inspector
 - Select "Add to Comparator" from the context menu
 - The Comparator window will open (or focus if already open)
-- The Component's type will be automatically set, and the Component will be added to the list
-- Perfect for quickly comparing multiple instances of the same Component type
+- The object's type will be automatically set, and the object will be added to the list
+- Perfect for quickly comparing multiple instances of the same type
 
 #### Customizing Display Mode
 

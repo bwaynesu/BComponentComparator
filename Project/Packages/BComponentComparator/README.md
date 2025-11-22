@@ -8,7 +8,7 @@ Compare multiple Unity objects side-by-side with native Inspector editing.
 2. **Set Type**: Drag any Component, asset, or MonoScript to the top field
 3. **Add Objects**: 
    - Drag matching objects into the list
-   - Or right-click any Component in Inspector > "Add to Comparator"
+   - Or right-click any object in Inspector > "Add to Comparator"
 4. **Compare**: View and edit all Inspectors side-by-side
 
 ## Features
