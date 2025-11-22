@@ -88,19 +88,48 @@ namespace BTools.BComponentComparator.Editor
         /// Set the required Component/asset type for validation
         /// </summary>
         /// <param name="type">Type of Component or asset</param>
-        public void SetRequiredType(Type type)
+        /// <param name="keepCompatible">If true, keeps existing items that are compatible with the new type instead of clearing the list.</param>
+        public void SetRequiredType(Type type, bool keepCompatible = false)
         {
             if (type == null)
             {
                 throw new ArgumentNullException(nameof(type));
             }
 
-            // If type changes, clear existing list and prompt user
-            if (requiredType != null &&
-                requiredType != type &&
+            // If type changes
+            if (requiredType != null && 
+                requiredType != type && 
                 items.Count > 0)
             {
-                ClearItems();
+                if (keepCompatible)
+                {
+                    // Filter out incompatible items
+                    var itemsToRemove = new List<ComparisonItem>();
+                    foreach (var item in items)
+                    {
+                        // Check if the item's object is assignable to the new type
+                        if (item.TargetObject != null && !type.IsAssignableFrom(item.TargetObject.GetType()))
+                        {
+                            itemsToRemove.Add(item);
+                        }
+                    }
+
+                    foreach (var item in itemsToRemove)
+                    {
+                        item.Dispose();
+                        items.Remove(item);
+                    }
+
+                    if (itemsToRemove.Count > 0)
+                    {
+                        RebuildListView();
+                        OnItemsChanged?.Invoke();
+                    }
+                }
+                else
+                {
+                    ClearItems();
+                }
             }
 
             requiredType = type;
@@ -199,7 +228,9 @@ namespace BTools.BComponentComparator.Editor
                 }
 
                 // For non-GameObject objects, add directly
-                if (obj != null && !items.Exists(item => item.TargetObject == obj))
+                if (obj != null && 
+                    obj is not MonoScript &&
+                    !items.Exists(item => item.TargetObject == obj))
                 {
                     try
                     {

@@ -192,6 +192,107 @@ namespace BTools.BComponentComparator.Editor.Tests
         }
 
         #endregion
+
+        #region Utility Inheritance Chain Tests
+
+        [Test]
+        public void GetInheritanceChain_WithBoxCollider_ReturnsCorrectChain()
+        {
+            // Arrange
+            var type = typeof(BoxCollider);
+
+            // Act
+            var chain = Utility.GetInheritanceChain(type);
+
+            // Assert
+            // Expected: BoxCollider -> Collider -> Component -> Object (UnityEngine.Object) -> Object (System.Object)
+            // But Utility filters out UnityEngine.Object and System.Object
+            // So expected: BoxCollider -> Collider -> Component -> Behaviour -> Component? 
+            // Wait, let's check the hierarchy:
+            // BoxCollider : Collider
+            // Collider : Component
+            // Component : Object (UnityEngine)
+            // Actually: BoxCollider -> Collider -> Component -> Object
+            // Wait, Collider inherits from Component directly?
+            // BoxCollider -> Collider -> Component -> Object
+            // Let's check Behaviour.
+            // BoxCollider -> Collider -> Component
+            // Wait, is Collider a Behaviour? No.
+            // Let's check MonoBehaviour.
+            // MonoBehaviour -> Behaviour -> Component -> Object
+            
+            // Let's verify BoxCollider chain:
+            // BoxCollider -> Collider -> Component -> Object
+            // Filtered: BoxCollider, Collider, Component.
+            
+            Assert.IsNotNull(chain);
+            Assert.AreEqual(3, chain.Count);
+            Assert.AreEqual(typeof(BoxCollider), chain[0]);
+            Assert.AreEqual(typeof(Collider), chain[1]);
+            Assert.AreEqual(typeof(Component), chain[2]);
+        }
+
+        [Test]
+        public void GetInheritanceChain_WithMonoBehaviour_ReturnsCorrectChain()
+        {
+            // Arrange
+            var type = typeof(DerivedTestComponent);
+
+            // Act
+            var chain = Utility.GetInheritanceChain(type);
+
+            // Assert
+            // DerivedTestComponent -> BaseTestComponent -> MonoBehaviour -> Behaviour -> Component -> Object
+            // Filtered: DerivedTestComponent, BaseTestComponent, MonoBehaviour, Behaviour, Component
+            
+            Assert.IsNotNull(chain);
+            Assert.AreEqual(5, chain.Count);
+            Assert.AreEqual(typeof(DerivedTestComponent), chain[0]);
+            Assert.AreEqual(typeof(BaseTestComponent), chain[1]);
+            Assert.AreEqual(typeof(MonoBehaviour), chain[2]);
+            Assert.AreEqual(typeof(Behaviour), chain[3]);
+            Assert.AreEqual(typeof(Component), chain[4]);
+        }
+
+        [Test]
+        public void GetInheritanceChain_WithNull_ReturnsEmptyList()
+        {
+            // Act
+            var chain = Utility.GetInheritanceChain(null);
+
+            // Assert
+            Assert.IsNotNull(chain);
+            Assert.AreEqual(0, chain.Count);
+        }
+
+        [Test]
+        public void GetInheritanceChain_WithSystemType_ReturnsEmptyOrFiltered()
+        {
+            // Arrange
+            var type = typeof(string); // System.String -> System.Object
+
+            // Act
+            var chain = Utility.GetInheritanceChain(type);
+
+            // Assert
+            // Should be empty because it starts with System namespace
+            Assert.AreEqual(0, chain.Count);
+        }
+
+        [Test]
+        public void GetInheritanceChain_WithUnityEngineObject_ReturnsEmpty()
+        {
+            // Arrange
+            var type = typeof(UnityEngine.Object);
+
+            // Act
+            var chain = Utility.GetInheritanceChain(type);
+
+            // Assert
+            Assert.AreEqual(0, chain.Count);
+        }
+
+        #endregion
     }
 
     #region Test Helper Classes

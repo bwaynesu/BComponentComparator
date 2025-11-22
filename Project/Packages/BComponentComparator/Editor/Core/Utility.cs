@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using UnityEditor;
 
 namespace BTools.BComponentComparator.Editor
@@ -39,6 +40,37 @@ namespace BTools.BComponentComparator.Editor
 
             importerType = importer.GetType();
             return true;
+        }
+
+        /// <summary>
+        /// Get the inheritance chain of a type, from the type itself up to (but excluding) System.Object/UnityEngine.Object.
+        /// </summary>
+        /// <param name="type">The starting type.</param>
+        /// <returns>List of types in the inheritance chain.</returns>
+        public static List<Type> GetInheritanceChain(Type type)
+        {
+            var chain = new List<Type>();
+            if (type == null)
+            {
+                return chain;
+            }
+
+            var curType = type;
+            while (curType != null)
+            {
+                // Filter out System.Object, UnityEngine.Object, and System.* namespace types
+                if (curType == typeof(object) ||
+                    curType == typeof(UnityEngine.Object) ||
+                    (curType.Namespace != null && curType.Namespace.StartsWith("System")))
+                {
+                    break;
+                }
+
+                chain.Add(curType);
+                curType = curType.BaseType;
+            }
+
+            return chain;
         }
     }
 }

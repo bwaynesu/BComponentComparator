@@ -222,3 +222,31 @@
     background-color: rgba(187, 58, 58, 0.2);
     border-color: rgb(187, 58, 58);
 }
+
+/* Inheritance Selector Row */
+.inheritance-row {
+    flex-direction: row;
+    align-items: center;
+}
+
+.inheritance-label {
+    margin-right: 5px;
+    min-width: 60px;
+}
+
+.inheritance-dropdown {
+    flex-grow: 1;
+    flex-shrink: 1;
+    width: 0; /* Force flex item to shrink below content size */
+}
+
+.inheritance-dropdown .unity-base-popup-field__text {
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.inheritance-dropdown .unity-base-popup-field__input {
+    flex-grow: 1;
+    overflow: hidden;
+}

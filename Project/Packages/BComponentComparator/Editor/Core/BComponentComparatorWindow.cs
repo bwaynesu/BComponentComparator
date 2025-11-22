@@ -16,6 +16,9 @@ namespace BTools.BComponentComparator.Editor
         // --- Left Panel Class Names ---
         private static readonly string controlPanelClassName = "control-panel";
         private static readonly string componentTypeFieldClassName = "component-type-field";
+        private static readonly string inheritanceRowClassName = "inheritance-row";
+        private static readonly string inheritanceLabelClassName = "inheritance-label";
+        private static readonly string inheritanceDropdownClassName = "inheritance-dropdown";
         private static readonly string displayModeRowClassName = "display-mode-row";
         private static readonly string displayModeLabelClassName = "display-mode-label";
         private static readonly string widthControlRowClassName = "width-control-row";
@@ -40,6 +43,9 @@ namespace BTools.BComponentComparator.Editor
         private string componentTypeAssemblyQualifiedName;
 
         [SerializeField]
+        private string rootComponentTypeAssemblyQualifiedName;
+
+        [SerializeField]
         private List<UnityEngine.Object> serializedObjects = new();
 
         [SerializeField]
@@ -47,6 +53,7 @@ namespace BTools.BComponentComparator.Editor
 
         // --- Fields ---
         private Type currentComponentType;
+        private Type rootComponentType;
         private ComparisonListController listController;
         private InspectorColumnController inspectorController;
 
@@ -54,6 +61,7 @@ namespace BTools.BComponentComparator.Editor
         private TwoPaneSplitView splitView;
         private VisualElement componentTypeField;
         private Label componentTypeLabel;
+        private DropdownField inheritanceDropdown;
         private Button clearListButton;
         private SliderInt widthSlider;
         private EnumField displayModeField;
@@ -150,6 +158,22 @@ namespace BTools.BComponentComparator.Editor
             componentTypeLabel.style.color = new StyleColor(new Color(0.6f, 0.6f, 0.6f));
             componentTypeField.Add(componentTypeLabel);
             leftPanel.Add(componentTypeField);
+
+            // Inheritance controls
+            var inheritanceRow = new VisualElement();
+            inheritanceRow.AddToClassList(inheritanceRowClassName);
+
+            var inheritanceLabel = new Label("Use Type:");
+            inheritanceLabel.AddToClassList(inheritanceLabelClassName);
+            inheritanceRow.Add(inheritanceLabel);
+
+            inheritanceDropdown = new DropdownField();
+            inheritanceDropdown.AddToClassList(inheritanceDropdownClassName);
+            inheritanceDropdown.SetEnabled(false);
+            inheritanceDropdown.RegisterValueChangedCallback(OnInheritanceTypeChanged);
+            inheritanceRow.Add(inheritanceDropdown);
+
+            leftPanel.Add(inheritanceRow);
 
             // Display Mode controls
             var displayModeRow = new VisualElement();
@@ -341,9 +365,30 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
-            currentComponentType = componentType;
+            // Update Root Type
+            rootComponentType = componentType;
             componentTypeLabel.text = componentType.Name;
             componentTypeLabel.style.color = Color.white;
+
+            // Populate Inheritance Dropdown
+            var chain = Utility.GetInheritanceChain(rootComponentType);
+            inheritanceDropdown.choices = chain.ConvertAll(t => t.Name);
+
+            // Temporarily unregister callback to avoid triggering logic
+            inheritanceDropdown.UnregisterValueChangedCallback(OnInheritanceTypeChanged);
+            if (inheritanceDropdown.choices.Count > 0)
+            {
+                inheritanceDropdown.value = inheritanceDropdown.choices[0];
+                inheritanceDropdown.SetEnabled(true);
+            }
+            else
+            {
+                inheritanceDropdown.value = "";
+                inheritanceDropdown.SetEnabled(false);
+            }
+            inheritanceDropdown.RegisterValueChangedCallback(OnInheritanceTypeChanged);
+
+            currentComponentType = componentType;
 
             listController?.SetRequiredType(componentType);
             UpdateDisplayModeField();
@@ -351,14 +396,32 @@ namespace BTools.BComponentComparator.Editor
             // Add all dropped objects to list
             if (listController != null)
             {
-                foreach (var obj in droppedObjects)
-                {
-                    listController.AddItem(obj);
-                }
+                listController.AddItems(droppedObjects);
             }
 
             ValidateButtonStates();
             SaveState();
+        }
+
+        private void OnInheritanceTypeChanged(ChangeEvent<string> evt)
+        {
+            if (rootComponentType == null || string.IsNullOrEmpty(evt.newValue))
+            {
+                return;
+            }
+
+            var chain = Utility.GetInheritanceChain(rootComponentType);
+            var selectedType = chain.Find(t => t.Name == evt.newValue);
+
+            if (selectedType != null)
+            {
+                currentComponentType = selectedType;
+
+                // Update list validation, keeping compatible items
+                listController?.SetRequiredType(currentComponentType, true);
+
+                UpdateDisplayModeField();
+            }
         }
 
         private void OnClearListButtonClick()
@@ -429,6 +492,7 @@ namespace BTools.BComponentComparator.Editor
         {
             // Save component type
             componentTypeAssemblyQualifiedName = currentComponentType?.AssemblyQualifiedName;
+            rootComponentTypeAssemblyQualifiedName = rootComponentType?.AssemblyQualifiedName;
 
             // Save objects from list
             serializedObjects.Clear();
@@ -452,13 +516,34 @@ namespace BTools.BComponentComparator.Editor
             if (!string.IsNullOrEmpty(componentTypeAssemblyQualifiedName))
             {
                 currentComponentType = Type.GetType(componentTypeAssemblyQualifiedName);
+            }
+
+            if (!string.IsNullOrEmpty(rootComponentTypeAssemblyQualifiedName))
+            {
+                rootComponentType = Type.GetType(rootComponentTypeAssemblyQualifiedName);
+            }
+
+            if (rootComponentType != null)
+            {
+                componentTypeLabel.text = rootComponentType.Name;
+                componentTypeLabel.style.color = Color.white;
+
+                var chain = Utility.GetInheritanceChain(rootComponentType);
+                inheritanceDropdown.choices = chain.ConvertAll(t => t.Name);
+                inheritanceDropdown.SetEnabled(true);
+
                 if (currentComponentType != null)
                 {
-                    componentTypeLabel.text = currentComponentType.Name;
-                    componentTypeLabel.style.color = Color.white;
-
+                    inheritanceDropdown.SetValueWithoutNotify(currentComponentType.Name);
                     listController?.SetRequiredType(currentComponentType);
                 }
+            }
+            else if (currentComponentType != null)
+            {
+                componentTypeLabel.text = currentComponentType.Name;
+                componentTypeLabel.style.color = Color.white;
+
+                listController?.SetRequiredType(currentComponentType);
             }
 
             // Restore inspector width
