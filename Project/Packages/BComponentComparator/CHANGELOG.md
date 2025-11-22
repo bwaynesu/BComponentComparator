@@ -1,3 +1,11 @@
+# [1.8.0](https://github.com/bwaynesu/BComponentComparator/compare/1.7.0...1.8.0) (2025-11-22)
+
+
+### Features
+
+* block asset importer type ([75bc7d3](https://github.com/bwaynesu/BComponentComparator/commit/75bc7d39cc58c5aada3d044d1e33e680f5406908))
+* choose parent type support ([1f54d12](https://github.com/bwaynesu/BComponentComparator/commit/1f54d1296cae7c9e276e668bf7f31e08ce4a8fc9))
+
 # [1.7.0](https://github.com/bwaynesu/BComponentComparator/compare/1.6.0...1.7.0) (2025-11-22)
 
 
