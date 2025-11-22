@@ -201,30 +201,19 @@ namespace BTools.BComponentComparator.Editor
             column.AddToClassList(inspectorColumnClassName);
             column.style.width = columnWidth;
             column.style.minWidth = columnWidth;
-            column.style.maxWidth = columnWidth; // Explicitly set max width
-            column.style.overflow = Overflow.Hidden; // Clip content that exceeds column width
+            column.style.maxWidth = columnWidth;
 
             // Header container with name and remove button
             var headerContainer = new VisualElement();
             headerContainer.AddToClassList(inspectorColumnHeaderClassName);
-            headerContainer.style.position = Position.Relative;
 
             var headerLabel = new Label(item.DisplayName);
-            headerLabel.style.flexGrow = 1;
-            headerLabel.style.overflow = Overflow.Hidden;
-            headerLabel.style.paddingRight = 25; // Space for button
             headerLabel.AddToClassList(inspectorColumnHeaderLabelClassName);
             headerContainer.Add(headerLabel);
 
-            // Remove button with × symbol (absolutely positioned, initially hidden)
+            // Remove button with × symbol
             var removeButton = new Button { text = "×" };
             removeButton.AddToClassList(removeButtonClassName);
-            removeButton.style.position = Position.Absolute;
-            removeButton.style.right = 8;
-            removeButton.style.top = 5;
-            removeButton.style.width = 20;
-            removeButton.style.height = 20;
-            removeButton.style.visibility = Visibility.Hidden;
             removeButton.clicked += () => OnRemoveColumn(item);
             headerContainer.Add(removeButton);
 
@@ -244,10 +233,8 @@ namespace BTools.BComponentComparator.Editor
             // Inspector content container
             var contentContainer = new VisualElement();
             contentContainer.AddToClassList(inspectorContentClassName);
-            contentContainer.style.width = columnWidth; // Match column width
-            contentContainer.style.maxWidth = columnWidth; // Prevent expansion
-            contentContainer.style.overflow = Overflow.Hidden; // Clip overflowing content
-            contentContainer.style.paddingRight = 8;
+            contentContainer.style.width = columnWidth;
+            contentContainer.style.maxWidth = columnWidth;
 
             CreateInspector(item, contentContainer);
 

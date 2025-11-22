@@ -132,6 +132,8 @@
 .inspector-column {
     width: 300px;
     min-width: 300px;
+    max-width: 300px;
+    overflow: hidden;
     background-color: rgb(56, 56, 56);
     border-width: 1px;
     border-color: rgb(35, 35, 35);
@@ -141,6 +143,7 @@
 }
 
 .inspector-column-header {
+    position: relative;
     height: 30px;
     background-color: rgb(42, 42, 42);
     padding-left: 8px;
@@ -151,10 +154,12 @@
 }
 
 .inspector-column-header-label {
+    flex-grow: 1;
     -unity-text-align: middle-left;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    padding-right: 25px;
 }
 
 .inspector-column-header-selected {
@@ -163,6 +168,12 @@
 
 /* Remove Button */
 .remove-button {
+    position: absolute;
+    right: 8px;
+    top: 5px;
+    width: 20px;
+    height: 20px;
+    visibility: hidden;
     background-color: transparent;
     border-width: 0;
     font-size: 16px;
@@ -184,6 +195,8 @@
 
 .inspector-content {
     flex-grow: 1;
+    overflow: hidden;
+    padding-right: 8px;
 }
 
 /* Empty State */
