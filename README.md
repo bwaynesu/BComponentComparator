@@ -9,7 +9,7 @@
 **Stop switching between Inspector windows.**   
 Compare and edit multiple Unity objects side-by-side, spot inconsistencies instantly, and maintain quality across your entire project — all in a single, synchronized view.
 
-<img width="700" alt="Preview" src="https://github.com/user-attachments/assets/73963212-5bbf-473a-a980-e4fd3f1f8dd7" />
+<img width="900" alt="Preview" src="https://github.com/user-attachments/assets/e676f25c-7474-4806-891d-edee3ab1cf85" />
 
 ## Why BComponentComparator?
 
@@ -32,22 +32,32 @@ BComponentComparator gives you a parallel view of multiple Inspectors, letting y
 
 Native Inspector rendering means everything just works — Undo/Redo, Copy/Paste, Custom Inspectors, and all field types.
 
-https://github.com/user-attachments/assets/caa12751-699b-432d-bc69-6eb8385326be
+<!-- https://github.com/user-attachments/assets/caa12751-699b-432d-bc69-6eb8385326be -->
 
 ## Features
 
 - **Drag-and-Drop Interface**: Intuitive drag-and-drop to specify object type and add objects to compare
+  ![Unity_2025-11-23_00-00-21](https://github.com/user-attachments/assets/dc9fa2d7-29c3-407e-a9cd-faca82ed76cd)
+
 - **Side-by-Side Comparison**: View multiple Unity Inspectors in parallel columns for easy visual comparison
 - **Flexible Object Selection**: Support for almost any Unity object type including Components, ScriptableObjects, Materials, Textures, Audio Clips, and more
+  ![Unity_2025-11-22_23-44-27](https://github.com/user-attachments/assets/c1ba38b6-bfcc-471d-9c03-bb918f75b167)
+
 - **Native Inspector Support**: Uses Unity's native Inspector rendering, ensuring full editing capabilities including:
   - Undo/Redo
   - Copy/Paste Component Values
   - Custom Inspectors (including third-party tools like Odin Inspector)
   - All field types and widgets
+
+  ![Unity_2025-11-23_00-03-17](https://github.com/user-attachments/assets/d652fdcc-91d0-4bfd-91d6-7cdd2a53cb43)
+  
 - **Inheritance Selector**: Drag a component and use the dropdown to select a base type (e.g., drag `BoxCollider`, select `Collider`, then compare with `SphereCollider`)
+  ![Unity_2025-11-22_23-47-10](https://github.com/user-attachments/assets/3b816c14-1015-4424-888c-2fbb0866a0b5)
+
 - **Reorderable List**: Drag items in the list to reorder, with Inspector columns updating in real-time
 - **Multi-Selection Sync**: Select multiple items in the list to highlight them in the Unity Editor
 - **Context Menu Integration**: Right-click any Component or asset in the Inspector and select "Add to Comparator" to quickly add it to the comparison list
+  ![Unity_2025-11-22_23-49-14](https://github.com/user-attachments/assets/68020f72-d724-456d-b117-470191070907)
 
 ## Real-World Use Cases
 
