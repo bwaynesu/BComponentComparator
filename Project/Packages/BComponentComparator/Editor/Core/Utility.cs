@@ -58,10 +58,11 @@ namespace BTools.BComponentComparator.Editor
             var curType = type;
             while (curType != null)
             {
-                // Filter out System.Object, UnityEngine.Object, and System.* namespace types
+                // Filter
                 if (curType == typeof(object) ||
                     curType == typeof(UnityEngine.Object) ||
-                    (curType.Namespace != null && curType.Namespace.StartsWith("System")))
+                    (curType.Namespace != null && curType.Namespace.StartsWith("System")) ||
+                    curType == typeof(AssetImporter))
                 {
                     break;
                 }

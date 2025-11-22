@@ -12,18 +12,18 @@
     background-color: rgb(56, 56, 56);
     border-right-width: 1px;
     border-right-color: rgb(35, 35, 35);
-    padding: 10px;
+    padding: 5px 10px 10px 10px;
 }
 
 /* Component Type Field */
 .component-type-field {
     height: 30px;
-    background-color: rgb(42, 42, 42);
+    background-color: rgba(255, 255, 255, 0.1);
     border-width: 1px;
     border-color: rgb(28, 28, 28);
     border-radius: 3px;
     padding: 5px;
-    margin-bottom: 20px;
+    margin-bottom: 5px;
     align-items: center;
     justify-content: center;
 }
@@ -52,7 +52,6 @@
 .width-control-row {
     flex-direction: row;
     align-items: center;
-    margin-bottom: 12px;
     margin-left: 1px;
     margin-right: 1px;
 }
@@ -249,4 +248,12 @@
 .inheritance-dropdown .unity-base-popup-field__input {
     flex-grow: 1;
     overflow: hidden;
+}
+
+/* Section Container */
+.section-container {
+    background-color: rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    padding: 8px;
+    margin-bottom: 10px;
 }

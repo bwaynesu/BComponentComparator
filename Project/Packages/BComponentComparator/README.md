@@ -14,7 +14,7 @@ Compare multiple Unity objects side-by-side with native Inspector editing.
 ## Features
 
 - Native Inspector rendering (full editing support)
-- Inheritance support (drag derived classes)
+- Inheritance Selector: Switch between base and derived types to compare polymorphic objects (e.g., compare `BoxCollider` vs `SphereCollider`)
 - Drag-and-drop workflow
 - Reorderable list with synchronized columns
 - Multi-selection support

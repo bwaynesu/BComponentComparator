@@ -44,7 +44,7 @@ https://github.com/user-attachments/assets/caa12751-699b-432d-bc69-6eb8385326be
   - Copy/Paste Component Values
   - Custom Inspectors (including third-party tools like Odin Inspector)
   - All field types and widgets
-- **Inheritance Support**: Drag derived class instances into the list after specifying a base type (e.g., specify `Collider` and drag objects with `BoxCollider`, `SphereCollider`, etc.)
+- **Inheritance Selector**: Drag a component and use the dropdown to select a base type (e.g., drag `BoxCollider`, select `Collider`, then compare with `SphereCollider`)
 - **Reorderable List**: Drag items in the list to reorder, with Inspector columns updating in real-time
 - **Multi-Selection Sync**: Select multiple items in the list to highlight them in the Unity Editor
 - **Context Menu Integration**: Right-click any Component or asset in the Inspector and select "Add to Comparator" to quickly add it to the comparison list
@@ -81,6 +81,7 @@ Copy-paste Component values across multiple objects in seconds instead of minute
 1. **Open the Window**: Go to `Window > BTools > BComponentComparator`
 2. **Specify Object Type**: 
    - Drag a Component from the Scene/Hierarchy onto the "Drag Component type here..." field
+   - **(Optional)** Use the "Use Type" dropdown to select a base class (e.g., `Collider`) for polymorphic comparison
    - Or drag a MonoScript (.cs file) from the Project window
    - Or drag any Unity asset (ScriptableObject, Material, Texture, Audio Clip, etc.)
 3. **Add Objects to Compare**:

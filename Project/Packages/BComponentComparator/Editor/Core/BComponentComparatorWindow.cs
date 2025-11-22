@@ -26,6 +26,7 @@ namespace BTools.BComponentComparator.Editor
         private static readonly string widthSliderClassName = "width-slider";
         private static readonly string comparisonListClassName = "comparison-list";
         private static readonly string buttonContainerClassName = "button-container";
+        private static readonly string sectionContainerClassName = "section-container";
 
         // --- Left Panel Element Names ---
         private static readonly string listPlaceholderName = "list-placeholder";
@@ -151,13 +152,17 @@ namespace BTools.BComponentComparator.Editor
             var leftPanel = new VisualElement();
             leftPanel.AddToClassList(controlPanelClassName);
 
+            // --- Type Configuration Section ---
+            var typeConfigSection = new VisualElement();
+            typeConfigSection.AddToClassList(sectionContainerClassName);
+
             // Component type field
             componentTypeField = new VisualElement();
             componentTypeField.AddToClassList(componentTypeFieldClassName);
             componentTypeLabel = new Label("Drag Component type here...");
             componentTypeLabel.style.color = new StyleColor(new Color(0.6f, 0.6f, 0.6f));
             componentTypeField.Add(componentTypeLabel);
-            leftPanel.Add(componentTypeField);
+            typeConfigSection.Add(componentTypeField);
 
             // Inheritance controls
             var inheritanceRow = new VisualElement();
@@ -173,7 +178,12 @@ namespace BTools.BComponentComparator.Editor
             inheritanceDropdown.RegisterValueChangedCallback(OnInheritanceTypeChanged);
             inheritanceRow.Add(inheritanceDropdown);
 
-            leftPanel.Add(inheritanceRow);
+            typeConfigSection.Add(inheritanceRow);
+            leftPanel.Add(typeConfigSection);
+
+            // --- View Settings Section ---
+            var viewSettingsSection = new VisualElement();
+            viewSettingsSection.AddToClassList(sectionContainerClassName);
 
             // Display Mode controls
             var displayModeRow = new VisualElement();
@@ -189,7 +199,7 @@ namespace BTools.BComponentComparator.Editor
             displayModeField.RegisterValueChangedCallback(OnDisplayModeChanged);
             displayModeRow.Add(displayModeField);
 
-            leftPanel.Add(displayModeRow);
+            viewSettingsSection.Add(displayModeRow);
 
             // Column width controls - label and slider in one row
             var widthRow = new VisualElement();
@@ -210,7 +220,8 @@ namespace BTools.BComponentComparator.Editor
                 inspectorController?.SetColumnWidth(evt.newValue);
             });
 
-            leftPanel.Add(widthRow);
+            viewSettingsSection.Add(widthRow);
+            leftPanel.Add(viewSettingsSection);
 
             // List view placeholder (will be created by ComparisonListController)
             var listPlaceholder = new VisualElement { name = listPlaceholderName };
