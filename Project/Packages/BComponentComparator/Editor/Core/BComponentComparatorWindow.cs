@@ -74,7 +74,7 @@ namespace BTools.BComponentComparator.Editor
             // Load USS stylesheet using relative path from script location
             var scriptPath = AssetDatabase.GetAssetPath(MonoScript.FromScriptableObject(this));
             var scriptDirectory = Path.GetDirectoryName(scriptPath);
-            var styleSheetPath = Path.Combine(scriptDirectory, "Styles", $"{nameof(BComponentComparatorWindow)}.uss");
+            var styleSheetPath = Path.Combine(scriptDirectory, $"{nameof(BComponentComparatorWindow)}.uss");
             styleSheetPath = styleSheetPath.Replace("\\", "/"); // Normalize path separators
 
             var styleSheet = AssetDatabase.LoadAssetAtPath<StyleSheet>(styleSheetPath);
