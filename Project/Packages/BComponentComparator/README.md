@@ -12,11 +12,10 @@ Compare multiple Unity objects side-by-side with native Inspector editing.
 ## Features
 
 - Native Inspector rendering (full editing support)
+- Inheritance support (drag derived classes)
 - Drag-and-drop workflow
 - Reorderable list with synchronized columns
 - Multi-selection support
-- Adjustable column width (200-600px)
-- State persistence across recompilation
 
 ## Supported Types
 
