@@ -151,7 +151,6 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 
 Features we are working on adding:
 
-- **Bulk Type Selection**: When dragging multiple objects to specify type, add all selected objects to the list instead of just one
 - **Context Menu Integration**: Add "Add to Comparator" option in Component right-click menu that automatically opens the Comparator window
 - **Inheritance Support**: Support dragging derived class instances into the list after specifying a base type
 

@@ -339,30 +339,15 @@ namespace BTools.BComponentComparator.Editor
         /// <summary>
         /// Handle objects dropped on ListView
         /// </summary>
-        /// <param name="obj">The object being dropped (not used, as we get all from DragAndDrop)</param>
-        private void OnObjectDropped(UnityEngine.Object obj)
+        /// <param name="droppedObjects">Array of all dropped objects</param>
+        private void OnObjectDropped(UnityEngine.Object[] droppedObjects)
         {
-            if (requiredType == null)
+            if (requiredType == null || droppedObjects == null || droppedObjects.Length == 0)
             {
                 return;
             }
 
-            // Get all dragged objects
-            var draggedObjects = DragAndDrop.objectReferences;
-            var validObjects = new List<UnityEngine.Object>();
-
-            foreach (var draggedObj in draggedObjects)
-            {
-                if (draggedObj != null && DragDropHandler.IsValidObject(draggedObj, requiredType))
-                {
-                    validObjects.Add(draggedObj);
-                }
-            }
-
-            if (validObjects.Count > 0)
-            {
-                AddItems(validObjects);
-            }
+            AddItems(droppedObjects);
         }
 
         /// <summary>

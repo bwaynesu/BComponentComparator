@@ -315,9 +315,16 @@ namespace BTools.BComponentComparator.Editor
             }
         }
 
-        private void OnComponentTypeDrop(UnityEngine.Object droppedObject)
+        private void OnComponentTypeDrop(UnityEngine.Object[] droppedObjects)
         {
-            if (!DragDropHandler.TryExtractedType(droppedObject, out Type componentType))
+            if (droppedObjects == null || droppedObjects.Length == 0)
+            {
+                return;
+            }
+
+            // Use first object to determine component type
+            var firstObject = droppedObjects[0];
+            if (!DragDropHandler.TryExtractedType(firstObject, out Type componentType))
             {
                 return;
             }
@@ -328,9 +335,17 @@ namespace BTools.BComponentComparator.Editor
 
             listController?.SetRequiredType(componentType);
             UpdateDisplayModeField();
-            listController?.AddItem(droppedObject);
+            
+            // Add all dropped objects to list
+            if (listController != null)
+            {
+                foreach (var obj in droppedObjects)
+                {
+                    listController.AddItem(obj);
+                }
+            }
+            
             ValidateButtonStates();
-
             SaveState();
         }
 

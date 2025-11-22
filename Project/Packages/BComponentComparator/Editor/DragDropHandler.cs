@@ -167,11 +167,11 @@ namespace BTools.BComponentComparator.Editor
         /// </summary>
         /// <param name="target">Target VisualElement</param>
         /// <param name="validator">Validation function</param>
-        /// <param name="onDropAccepted">Callback when valid drop accepted</param>
+        /// <param name="onDropAccepted">Callback when valid drop accepted, receives all valid dropped objects</param>
         public static void RegisterDragDropCallbacks(
             VisualElement target,
             Func<UnityEngine.Object, bool> validator,
-            Action<UnityEngine.Object> onDropAccepted)
+            Action<UnityEngine.Object[]> onDropAccepted)
         {
             if (target == null || validator == null || onDropAccepted == null)
             {
@@ -237,16 +237,24 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
-            var draggedObject = DragAndDrop.objectReferences[0];
-            var isValid = validator(draggedObject);
+            // Check if at least one object is valid
+            var hasValidObject = false;
+            foreach (var obj in DragAndDrop.objectReferences)
+            {
+                if (validator(obj))
+                {
+                    hasValidObject = true;
+                    break;
+                }
+            }
 
-            DragAndDrop.visualMode = isValid ? DragAndDropVisualMode.Link : DragAndDropVisualMode.Rejected;
+            DragAndDrop.visualMode = hasValidObject ? DragAndDropVisualMode.Link : DragAndDropVisualMode.Rejected;
 
             // Visual feedback - remove old classes first
             target.RemoveFromClassList(dragHoverClassName);
             target.RemoveFromClassList(dragRejectedClassName);
 
-            if (isValid)
+            if (hasValidObject)
             {
                 target.AddToClassList(dragHoverClassName);
             }
@@ -262,7 +270,7 @@ namespace BTools.BComponentComparator.Editor
             DragPerformEvent evt,
             VisualElement target,
             Func<UnityEngine.Object, bool> validator,
-            Action<UnityEngine.Object> onDropAccepted)
+            Action<UnityEngine.Object[]> onDropAccepted)
         {
             if (DragAndDrop.objectReferences.Length == 0)
             {
@@ -272,13 +280,20 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
-            var draggedObject = DragAndDrop.objectReferences[0];
+            // Collect all valid objects
+            var validObjects = new List<UnityEngine.Object>();
+            foreach (var obj in DragAndDrop.objectReferences)
+            {
+                if (validator(obj))
+                {
+                    validObjects.Add(obj);
+                }
+            }
 
-            var isValid = validator(draggedObject);
-            if (isValid)
+            if (validObjects.Count > 0)
             {
                 DragAndDrop.AcceptDrag();
-                onDropAccepted(draggedObject);
+                onDropAccepted(validObjects.ToArray());
             }
 
             // Remove visual feedback
