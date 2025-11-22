@@ -88,6 +88,8 @@ namespace BTools.BComponentComparator.Editor
 
             EditorGUILayout.Space();
 
+            EditorGUILayout.BeginHorizontal();
+            
             if ((customModesProperty.arraySize > 0) && GUILayout.Button("Clear All Custom Modes"))
             {
                 if (EditorUtility.DisplayDialog(
@@ -99,6 +101,20 @@ namespace BTools.BComponentComparator.Editor
                     settings.ClearAll();
                 }
             }
+
+            if (GUILayout.Button("Reset to Defaults"))
+            {
+                if (EditorUtility.DisplayDialog(
+                        "Reset to Defaults",
+                        "Are you sure you want to reset all display modes to default values? This will overwrite your current settings.",
+                        "Reset",
+                        "Cancel"))
+                {
+                    settings.ResetToDefaults();
+                }
+            }
+            
+            EditorGUILayout.EndHorizontal();
         }
 
         public InspectorDisplaySettingsProvider(string path, SettingsScope scopes, IEnumerable<string> keywords = null)

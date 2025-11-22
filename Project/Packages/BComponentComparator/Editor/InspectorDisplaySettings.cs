@@ -29,15 +29,7 @@ namespace BTools.BComponentComparator.Editor
         }
 
         [SerializeField]
-        private List<TypeDisplayModeEntry> customModes = new()
-        {
-            new TypeDisplayModeEntry(GetTypeFullName(typeof(DefaultAsset)), InspectorDisplayMode.Editor),
-            new TypeDisplayModeEntry(GetTypeFullName(typeof(Texture2D)), InspectorDisplayMode.Editor),
-            new TypeDisplayModeEntry(GetTypeFullName(typeof(Font)), InspectorDisplayMode.Editor),
-            new TypeDisplayModeEntry(GetTypeFullName(typeof(AssemblyDefinitionAsset)), InspectorDisplayMode.Editor),
-            new TypeDisplayModeEntry("UnityEngine.InputSystem.InputActionAsset, Unity.InputSystem", InspectorDisplayMode.Editor),
-            new TypeDisplayModeEntry(GetTypeFullName(typeof(Shader)), InspectorDisplayMode.EditorThenElement),
-        };
+        private List<TypeDisplayModeEntry> customModes = null;
 
         /// <summary>
         /// Get the display mode for a specific type
@@ -99,6 +91,15 @@ namespace BTools.BComponentComparator.Editor
             SaveSettings(true);
         }
 
+        /// <summary>
+        /// Reset to default display mode configurations
+        /// </summary>
+        public void ResetToDefaults()
+        {
+            customModes = GetDefaultModes();
+            SaveSettings(true);
+        }
+
         private static string GetTypeFullName(Type type)
         {
             if (type == null)
@@ -107,6 +108,28 @@ namespace BTools.BComponentComparator.Editor
             }
 
             return $"{type.FullName}, {type.Assembly.GetName().Name}";
+        }
+
+        private static List<TypeDisplayModeEntry> GetDefaultModes()
+        {
+            return new List<TypeDisplayModeEntry>
+            {
+                new (GetTypeFullName(typeof(DefaultAsset)), InspectorDisplayMode.Editor),
+                new (GetTypeFullName(typeof(Texture2D)), InspectorDisplayMode.Editor),
+                new (GetTypeFullName(typeof(Font)), InspectorDisplayMode.Editor),
+                new (GetTypeFullName(typeof(AssemblyDefinitionAsset)), InspectorDisplayMode.Editor),
+                new ("UnityEngine.InputSystem.InputActionAsset, Unity.InputSystem", InspectorDisplayMode.Editor),
+                new (GetTypeFullName(typeof(Shader)), InspectorDisplayMode.EditorThenElement),
+            };
+        }
+
+        private void OnEnable()
+        {
+            if (customModes == null)
+            {
+                customModes = GetDefaultModes();
+                SaveSettings(true);
+            }
         }
     }
 }
