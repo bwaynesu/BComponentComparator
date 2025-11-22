@@ -89,7 +89,7 @@ namespace BTools.BComponentComparator.Editor
             EditorGUILayout.Space();
 
             EditorGUILayout.BeginHorizontal();
-            
+
             if ((customModesProperty.arraySize > 0) && GUILayout.Button("Clear All Custom Modes"))
             {
                 if (EditorUtility.DisplayDialog(
@@ -113,7 +113,7 @@ namespace BTools.BComponentComparator.Editor
                     settings.ResetToDefaults();
                 }
             }
-            
+
             EditorGUILayout.EndHorizontal();
         }
 

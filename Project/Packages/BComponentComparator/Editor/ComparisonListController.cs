@@ -117,10 +117,19 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
-            // If GameObject and required type is Component, extract the Component
-            if (obj is GameObject go && typeof(Component).IsAssignableFrom(requiredType))
+            // If GameObject and required type is Component, extract ALL matching Components
+            var isGoComponent = (obj is GameObject) && typeof(Component).IsAssignableFrom(requiredType);
+            if (isGoComponent)
             {
-                obj = go.GetComponent(requiredType);
+                var components = (obj as GameObject).GetComponents(requiredType);
+                if (components != null && components.Length > 0)
+                {
+                    AddItems(components);
+                    return;
+                }
+
+                // No matching components found
+                return;
             }
 
             // Check for duplicates
@@ -157,28 +166,51 @@ namespace BTools.BComponentComparator.Editor
             var anyAdded = false;
             foreach (var obj in objects)
             {
-                var curObj = obj;
-
-                // If GameObject and required type is Component, extract the Component
-                if (curObj is GameObject go && typeof(Component).IsAssignableFrom(requiredType))
+                // If GameObject and required type is Component, extract ALL matching Components
+                var isGoComponent = (obj is GameObject) && typeof(Component).IsAssignableFrom(requiredType);
+                if (isGoComponent)
                 {
-                    curObj = go.GetComponent(requiredType);
-                }
+                    var components = (obj as GameObject).GetComponents(requiredType);
+                    if (components == null || components.Length <= 0)
+                    {
+                        continue;
+                    }
 
-                if (curObj == null || items.Exists(item => item.TargetObject == curObj))
-                {
+                    foreach (var component in components)
+                    {
+                        if (component == null || items.Exists(item => item.TargetObject == component))
+                        {
+                            continue;
+                        }
+
+                        try
+                        {
+                            var comparisonItem = new ComparisonItem(component, requiredType);
+                            items.Add(comparisonItem);
+                            anyAdded = true;
+                        }
+                        catch (ArgumentException ex)
+                        {
+                            Debug.LogWarning(ex.Message);
+                        }
+                    }
+
                     continue;
                 }
 
-                try
+                // For non-GameObject objects, add directly
+                if (obj != null && !items.Exists(item => item.TargetObject == obj))
                 {
-                    var comparisonItem = new ComparisonItem(curObj, requiredType);
-                    items.Add(comparisonItem);
-                    anyAdded = true;
-                }
-                catch (ArgumentException ex)
-                {
-                    Debug.LogWarning(ex.Message);
+                    try
+                    {
+                        var comparisonItem = new ComparisonItem(obj, requiredType);
+                        items.Add(comparisonItem);
+                        anyAdded = true;
+                    }
+                    catch (ArgumentException ex)
+                    {
+                        Debug.LogWarning(ex.Message);
+                    }
                 }
             }
 

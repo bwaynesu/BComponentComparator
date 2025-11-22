@@ -73,7 +73,7 @@ namespace BTools.BComponentComparator.Editor
                     type = importerType;
                     return !excludedImporterNames.Contains(type.Name);
                 }
-                
+
                 // Regular GameObject without valid importer
                 type = null;
                 return false;
@@ -107,7 +107,7 @@ namespace BTools.BComponentComparator.Editor
             {
                 if (Utility.TryGetInheritedImporter(obj, out Type importerType))
                 {
-                    return !excludedImporterNames.Contains(importerType.Name) && 
+                    return !excludedImporterNames.Contains(importerType.Name) &&
                         requiredType.IsAssignableFrom(importerType);
                 }
 

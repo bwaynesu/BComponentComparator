@@ -335,7 +335,7 @@ namespace BTools.BComponentComparator.Editor
 
             listController?.SetRequiredType(componentType);
             UpdateDisplayModeField();
-            
+
             // Add all dropped objects to list
             if (listController != null)
             {
@@ -344,7 +344,7 @@ namespace BTools.BComponentComparator.Editor
                     listController.AddItem(obj);
                 }
             }
-            
+
             ValidateButtonStates();
             SaveState();
         }
