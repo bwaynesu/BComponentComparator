@@ -192,6 +192,8 @@ namespace BTools.BComponentComparator.Editor
             column.AddToClassList(inspectorColumnClassName);
             column.style.width = columnWidth;
             column.style.minWidth = columnWidth;
+            column.style.maxWidth = columnWidth; // Explicitly set max width
+            column.style.overflow = Overflow.Hidden; // Clip content that exceeds column width
 
             // Header container with name and remove button
             var headerContainer = new VisualElement();
@@ -233,6 +235,9 @@ namespace BTools.BComponentComparator.Editor
             // Inspector content container
             var contentContainer = new VisualElement();
             contentContainer.AddToClassList(inspectorContentClassName);
+            contentContainer.style.width = columnWidth; // Match column width
+            contentContainer.style.maxWidth = columnWidth; // Prevent expansion
+            contentContainer.style.overflow = Overflow.Hidden; // Clip overflowing content
 
             CreateInspector(item, contentContainer);
 

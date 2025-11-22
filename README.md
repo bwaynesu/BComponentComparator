@@ -147,12 +147,6 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 
 - Some asset types may require Display Mode adjustment for proper rendering (see Display Mode Customization above)
 
-## Known Issues
-
-We are actively investigating the following issues:
-
-- **Field Overflow**: Some fields may overflow beyond the column width (e.g., Material Color fields with expanded color picker)
-
 ## Planned Features
 
 Features we are working on adding:
