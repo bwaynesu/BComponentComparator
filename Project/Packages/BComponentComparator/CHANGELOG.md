@@ -1,3 +1,13 @@
+# [1.7.0](https://github.com/bwaynesu/BComponentComparator/compare/1.6.0...1.7.0) (2025-11-22)
+
+
+### Features
+
+* add all target components from object ([71d4713](https://github.com/bwaynesu/BComponentComparator/commit/71d4713a0fc05328a7981824ccb48b8ee442ea03))
+* component right click context menu ([5ac2c31](https://github.com/bwaynesu/BComponentComparator/commit/5ac2c31519a9b447768fc427e19612398b03c932))
+* inheritance support ([6aa694b](https://github.com/bwaynesu/BComponentComparator/commit/6aa694b48558eee30c178b49f8e418c9cca89c1c))
+* support assets context menu ([2aae76a](https://github.com/bwaynesu/BComponentComparator/commit/2aae76adcea00d7620da0eada76f567412647c46))
+
 # [1.6.0](https://github.com/bwaynesu/BComponentComparator/compare/1.5.0...1.6.0) (2025-11-22)
 
 
