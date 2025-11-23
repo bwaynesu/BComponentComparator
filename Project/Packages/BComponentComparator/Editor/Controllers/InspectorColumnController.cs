@@ -140,6 +140,8 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
+            var selectedIndices = new List<int>();
+
             // Remove all highlights first
             foreach (var column in inspectorColumns)
             {
@@ -160,8 +162,15 @@ namespace BTools.BComponentComparator.Editor
                     if (selectedObjects.Contains(item.TargetObject))
                     {
                         header.AddToClassList(inspectorColumnHeaderSelectedClassName);
+                        selectedIndices.Add(i);
                     }
                 }
+            }
+
+            // Scroll to selection
+            if (selectedIndices.Count > 0)
+            {
+                ScrollToIndices(selectedIndices);
             }
         }
 
@@ -366,6 +375,54 @@ namespace BTools.BComponentComparator.Editor
             });
 
             editor = newEditor;
+        }
+
+        /// <summary>
+        /// Scroll to center the selected indices and reset vertical scroll
+        /// </summary>
+        /// <param name="indices">List of selected column indices</param>
+        private void ScrollToIndices(List<int> indices)
+        {
+            if (indices.Count == 0)
+            {
+                return;
+            }
+
+            // Calculate average index
+            var sum = 0;
+            foreach (var index in indices)
+            {
+                sum += index;
+            }
+
+            var avgIndex = sum / indices.Count;
+
+            // Calculate target position
+            // Column width + margins (5px left + 5px right = 10px)
+            // Note: Margin is defined in USS (.inspector-column { margin: 5px; })
+            var itemWidth = columnWidth + 10f;
+            var startOffset = 5f; // First item left margin
+
+            var targetCenterX = startOffset + (avgIndex * itemWidth) + (columnWidth / 2f);
+            var viewportWidth = scrollView.contentViewport.layout.width;
+
+            // If viewport layout is not ready, try main element layout
+            if (float.IsNaN(viewportWidth) || viewportWidth == 0)
+            {
+                viewportWidth = scrollView.layout.width;
+            }
+
+            // Calculate scroll X to center the target
+            var scrollX = targetCenterX - (viewportWidth / 2f);
+
+            // Clamp to 0 (max clamping is handled by ScrollView automatically)
+            if (scrollX < 0)
+            {
+                scrollX = 0;
+            }
+
+            // Reset vertical scroll to 0 as requested
+            scrollView.scrollOffset = new Vector2(scrollX, 0);
         }
     }
 }
