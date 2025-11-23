@@ -37,11 +37,11 @@ Native Inspector rendering means everything just works — Undo/Redo, Copy/Paste
 ## Features
 
 - **Drag-and-Drop Interface**: Intuitive drag-and-drop to specify object type and add objects to compare
-  ![Unity_2025-11-23_00-00-21](https://github.com/user-attachments/assets/dc9fa2d7-29c3-407e-a9cd-faca82ed76cd)
+  ![DragDrop-optimize](https://github.com/user-attachments/assets/b3675555-d084-4272-8293-e5a851be801b)
 
 - **Side-by-Side Comparison**: View multiple Unity Inspectors in parallel columns for easy visual comparison
 - **Flexible Object Selection**: Support for almost any Unity object type including Components, ScriptableObjects, Materials, Textures, Audio Clips, and more
-  ![Unity_2025-11-22_23-44-27](https://github.com/user-attachments/assets/c1ba38b6-bfcc-471d-9c03-bb918f75b167)
+  ![AssetTest-optimize](https://github.com/user-attachments/assets/f9f70881-519e-4d40-a23a-0d6aa14df8f0)
 
 - **Native Inspector Support**: Uses Unity's native Inspector rendering, ensuring full editing capabilities including:
   - Undo/Redo
@@ -49,15 +49,15 @@ Native Inspector rendering means everything just works — Undo/Redo, Copy/Paste
   - Custom Inspectors (including third-party tools like Odin Inspector)
   - All field types and widgets
 
-  ![Unity_2025-11-23_00-03-17](https://github.com/user-attachments/assets/d652fdcc-91d0-4bfd-91d6-7cdd2a53cb43)
+  ![CopyPaste-optimize](https://github.com/user-attachments/assets/64c72be7-d135-426c-b637-7e85786abe4c)
   
 - **Inheritance Selector**: Drag a component and use the dropdown to select a base type (e.g., drag `BoxCollider`, select `Collider`, then compare with `SphereCollider`)
-  ![Unity_2025-11-22_23-47-10](https://github.com/user-attachments/assets/3b816c14-1015-4424-888c-2fbb0866a0b5)
+  ![Inherit-optimize](https://github.com/user-attachments/assets/4af000d3-b758-486e-9589-256ac91d9d6e)
 
 - **Reorderable List**: Drag items in the list to reorder, with Inspector columns updating in real-time
 - **Multi-Selection Sync**: Select multiple items in the list to highlight them in the Unity Editor
 - **Context Menu Integration**: Right-click any Component or asset in the Inspector and select "Add to Comparator" to quickly add it to the comparison list
-  ![Unity_2025-11-22_23-49-14](https://github.com/user-attachments/assets/68020f72-d724-456d-b117-470191070907)
+  ![ContextMenu-optimize](https://github.com/user-attachments/assets/d70b77d9-2568-4fcf-8765-8ddbc0fb9e03)
 
 ## Real-World Use Cases
 
