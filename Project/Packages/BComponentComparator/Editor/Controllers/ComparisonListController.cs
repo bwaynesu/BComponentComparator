@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -17,6 +18,7 @@ namespace BTools.BComponentComparator.Editor
         private readonly Dictionary<Button, Action> removeButtonClickActionMap;
 
         private Type requiredType;
+        private int lastSelectionChangeFrame = -1;
 
         /// <summary>
         /// Event raised when the list changes (items added/removed/cleared)
@@ -97,8 +99,8 @@ namespace BTools.BComponentComparator.Editor
             }
 
             // If type changes
-            if (requiredType != null && 
-                requiredType != type && 
+            if (requiredType != null &&
+                requiredType != type &&
                 items.Count > 0)
             {
                 if (keepCompatible)
@@ -228,7 +230,7 @@ namespace BTools.BComponentComparator.Editor
                 }
 
                 // For non-GameObject objects, add directly
-                if (obj != null && 
+                if (obj != null &&
                     obj is not MonoScript &&
                     !items.Exists(item => item.TargetObject == obj))
                 {
@@ -337,6 +339,8 @@ namespace BTools.BComponentComparator.Editor
         /// <param name="selectedItems">Currently selected items</param>
         private void OnSelectionChanged(IEnumerable<object> selectedItems)
         {
+            lastSelectionChangeFrame = Time.frameCount;
+
             var selectedObjects = new List<UnityEngine.Object>();
 
             foreach (var item in selectedItems)
@@ -454,6 +458,9 @@ namespace BTools.BComponentComparator.Editor
             itemElement.RegisterCallback<MouseEnterEvent>(evt => { removeButton.style.visibility = Visibility.Visible; });
             itemElement.RegisterCallback<MouseLeaveEvent>(evt => { removeButton.style.visibility = Visibility.Hidden; });
 
+            // Register click handler to trigger selection logic even if item is already selected
+            itemElement.RegisterCallback<ClickEvent>(OnItemClicked);
+
             return itemElement;
         }
 
@@ -468,6 +475,9 @@ namespace BTools.BComponentComparator.Editor
             {
                 return;
             }
+
+            // Store item in userData for click handling
+            element.userData = items[index];
 
             var label = element.Q<Label>();
             if (label != null)
@@ -501,6 +511,24 @@ namespace BTools.BComponentComparator.Editor
 
                 removeButtonClickActionMap[removeButton] = clickEvent;
                 removeButton.clicked += clickEvent;
+            }
+        }
+
+        private void OnItemClicked(ClickEvent evt)
+        {
+            // If selection changed this frame, OnSelectionChanged already handled it
+            if (Time.frameCount == lastSelectionChangeFrame)
+            {
+                return;
+            }
+
+            var element = evt.currentTarget as VisualElement;
+
+            // If the clicked item is currently selected, force an update
+            if (element?.userData is ComparisonItem item &&
+                listView.selectedItems.Contains(item))
+            {
+                OnSelectionChanged(listView.selectedItems);
             }
         }
     }
