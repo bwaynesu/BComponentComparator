@@ -1,3 +1,11 @@
+# [1.9.0](https://github.com/bwaynesu/BComponentComparator/compare/1.8.0...1.9.0) (2025-11-23)
+
+
+### Features
+
+* scroll to selected items ([8fb044e](https://github.com/bwaynesu/BComponentComparator/commit/8fb044ea609c64adcbc270345f295939deb10a43))
+* trigger selected event even the item has been selected ([0aa9a02](https://github.com/bwaynesu/BComponentComparator/commit/0aa9a0266ba996f9ae8770d83f7fab03f195eb71))
+
 # [1.8.0](https://github.com/bwaynesu/BComponentComparator/compare/1.7.0...1.8.0) (2025-11-22)
 
 
