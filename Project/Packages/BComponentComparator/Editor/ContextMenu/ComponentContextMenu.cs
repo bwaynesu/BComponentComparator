@@ -25,7 +25,19 @@ namespace BTools.BComponentComparator.Editor
 
             window.Show();
             window.Focus();
-            window.AssignTypeFromObject(targetObject);
+
+            // Check if the current window type is compatible with the target object
+            if (window.CurrentComponentType != null && 
+                DragDropHandler.IsValidObject(targetObject, window.CurrentComponentType))
+            {
+                // If compatible, just add to the list
+                window.AddObjectToList(targetObject);
+            }
+            else
+            {
+                // Otherwise, reset the type to the new object's type
+                window.AssignTypeFromObject(targetObject);
+            }
         }
 
         [MenuItem(menuPath, true, menuPriority)]

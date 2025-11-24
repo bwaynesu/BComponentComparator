@@ -71,6 +71,11 @@ namespace BTools.BComponentComparator.Editor
         private SliderInt rowCountSlider;
         private EnumField displayModeField;
 
+        /// <summary>
+        /// Gets the currently selected component type.
+        /// </summary>
+        public Type CurrentComponentType => currentComponentType;
+
         [MenuItem("Window/BTools/BComponentComparator")]
         public static void ShowWindow()
         {
@@ -120,6 +125,24 @@ namespace BTools.BComponentComparator.Editor
         public void AssignTypeFromObject(UnityEngine.Object obj)
         {
             OnComponentTypeDrop(new UnityEngine.Object[] { obj });
+        }
+
+        /// <summary>
+        /// Adds an object to the comparison list.
+        /// </summary>
+        /// <param name="obj">The object to add.</param>
+        public void AddObjectToList(UnityEngine.Object obj)
+        {
+            if (listController == null || 
+                currentComponentType == null ||
+                !DragDropHandler.IsValidObject(obj, currentComponentType))
+            {
+                return;
+            }
+
+            listController.AddItems(new UnityEngine.Object[] { obj });
+            ValidateButtonStates();
+            SaveState();
         }
 
         private void OnDisable()

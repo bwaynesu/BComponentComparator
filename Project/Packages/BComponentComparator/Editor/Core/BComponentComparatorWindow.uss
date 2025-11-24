@@ -204,6 +204,7 @@
     align-items: center;
     justify-content: center;
     color: rgb(153, 153, 153);
+    padding-left: 20px;
 }
 
 .empty-state Label {
