@@ -83,6 +83,8 @@ Sometimes you need to compare different components on the same objects simultane
    
 Now you can inspect the position/rotation alongside the collider size for every object in a single view.
 
+![MultiRow-optimize](https://github.com/user-attachments/assets/334489b0-38b0-4014-b73f-836ba1a9e4a2)
+
 ## Installation
 
 1. **Unity Package Manager**
