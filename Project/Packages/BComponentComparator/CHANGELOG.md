@@ -1,3 +1,10 @@
+# [1.10.0](https://github.com/bwaynesu/BComponentComparator/compare/1.9.0...1.10.0) (2025-11-24)
+
+
+### Features
+
+* multi row layout ([e9ebc93](https://github.com/bwaynesu/BComponentComparator/commit/e9ebc9335b0482367a45f9c903747ff254b7669c))
+
 # [1.9.0](https://github.com/bwaynesu/BComponentComparator/compare/1.8.0...1.9.0) (2025-11-23)
 
 
