@@ -1,3 +1,10 @@
+# [1.11.0](https://github.com/bwaynesu/BComponentComparator/compare/1.10.0...1.11.0) (2025-11-24)
+
+
+### Features
+
+* context menu check is assign type or add to list ([663056c](https://github.com/bwaynesu/BComponentComparator/commit/663056c2dbee6c45cbcbf9556a01da46368d8dee))
+
 # [1.10.0](https://github.com/bwaynesu/BComponentComparator/compare/1.9.0...1.10.0) (2025-11-24)
 
 
