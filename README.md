@@ -73,6 +73,16 @@ Review multiple ScriptableObject configurations simultaneously — perfect for b
 ### Bulk Configuration
 Copy-paste Component values across multiple objects in seconds instead of minutes, then fine-tune individual differences with immediate visual feedback.
 
+### Advanced: Comparing Multiple Component Types
+Sometimes you need to compare different components on the same objects simultaneously (e.g., checking both `Transform` and `Collider` settings).
+
+1. Drag any component to the type field, then select **Component** from the "Use Type" dropdown (the base class for all components).
+2. Set **Row Count** to `2`.
+3. Drag the `Transform` and `Collider` from each object into the list.
+4. Arrange them so all Transforms are in the first row and Colliders in the second row.
+   
+Now you can inspect the position/rotation alongside the collider size for every object in a single view.
+
 ## Installation
 
 1. **Unity Package Manager**
@@ -118,6 +128,10 @@ Copy-paste Component values across multiple objects in seconds instead of minute
 
 #### Adjusting Column Width
 - Use the "Inspector Width" slider to adjust all column widths simultaneously
+
+#### Multi-Row Layout
+- Use the "Row Count" slider to stack Inspector columns vertically
+- Useful for comparing many objects on a single screen without excessive horizontal scrolling
 
 #### Using Context Menu
 - Right-click any Component or asset in the Inspector

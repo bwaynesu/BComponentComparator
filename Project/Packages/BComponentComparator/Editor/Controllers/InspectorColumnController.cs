@@ -29,6 +29,7 @@ namespace BTools.BComponentComparator.Editor
         private readonly Dictionary<ComparisonItem, UnityEditor.Editor> itemEditorMap;
 
         private int columnWidth = 300;
+        private int rowCount = 1;
 
         /// <summary>
         /// Event fired when remove button is clicked in Inspector column
@@ -49,7 +50,7 @@ namespace BTools.BComponentComparator.Editor
             // Create container for Inspector columns
             columnsContainer = new VisualElement();
             columnsContainer.AddToClassList(inspectorColumnsContainerClassName);
-            columnsContainer.style.flexDirection = FlexDirection.Row;
+            columnsContainer.style.flexDirection = FlexDirection.Column;
             columnsContainer.style.alignItems = Align.FlexStart;
 
             // Clear any existing content
@@ -80,7 +81,19 @@ namespace BTools.BComponentComparator.Editor
                 return;
             }
 
+            // Create row containers
+            var rowContainers = new List<VisualElement>();
+            for (var i = 0; i < rowCount; i++)
+            {
+                var row = new VisualElement();
+                row.style.flexDirection = FlexDirection.Row;
+                row.style.alignItems = Align.FlexStart;
+                columnsContainer.Add(row);
+                rowContainers.Add(row);
+            }
+
             // Create Inspector column for each valid item
+            var validItemIndex = 0;
             foreach (var item in items)
             {
                 if (!item.IsValid())
@@ -89,8 +102,18 @@ namespace BTools.BComponentComparator.Editor
                     continue;
                 }
 
-                CreateInspectorColumn(item);
+                var column = CreateInspectorColumn(item);
+                
+                // Distribute to rows: i % rowCount
+                var rowId = validItemIndex % rowCount;
+                if (rowId < rowContainers.Count)
+                {
+                    rowContainers[rowId].Add(column);
+                }
+
+                inspectorColumns.Add(column);
                 currentItems.Add(item);
+                validItemIndex++;
             }
         }
 
@@ -115,7 +138,7 @@ namespace BTools.BComponentComparator.Editor
             {
                 var inspector = column.Q<InspectorElement>();
                 inspector?.Unbind();
-                columnsContainer.Remove(column);
+                column.RemoveFromHierarchy();
             }
 
             inspectorColumns.Clear();
@@ -200,10 +223,26 @@ namespace BTools.BComponentComparator.Editor
         }
 
         /// <summary>
+        /// Set the number of rows for the layout
+        /// </summary>
+        /// <param name="count">Number of rows</param>
+        public void SetRowCount(int count)
+        {
+            if (rowCount == count)
+            {
+                return;
+            }
+
+            rowCount = Mathf.Max(1, count);
+
+            RebuildColumns(new List<ComparisonItem>(currentItems));
+        }
+
+        /// <summary>
         /// Create an Inspector column for a comparison item
         /// </summary>
         /// <param name="item">ComparisonItem to display</param>
-        private void CreateInspectorColumn(ComparisonItem item)
+        private VisualElement CreateInspectorColumn(ComparisonItem item)
         {
             // Create column container
             var column = new VisualElement();
@@ -249,9 +288,7 @@ namespace BTools.BComponentComparator.Editor
 
             column.Add(contentContainer);
 
-            // Add to container
-            columnsContainer.Add(column);
-            inspectorColumns.Add(column);
+            return column;
         }
 
         /// <summary>
@@ -392,7 +429,9 @@ namespace BTools.BComponentComparator.Editor
             var sum = 0;
             foreach (var index in indices)
             {
-                sum += index;
+                // Adjust index to represent visual column index
+                // Item index i is at visual column (i / rowCount)
+                sum += (index / rowCount);
             }
 
             var avgIndex = sum / indices.Count;

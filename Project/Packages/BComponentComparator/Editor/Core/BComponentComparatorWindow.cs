@@ -52,6 +52,9 @@ namespace BTools.BComponentComparator.Editor
         [SerializeField]
         private int inspectorWidth = 300;
 
+        [SerializeField]
+        private int rowCount = 1;
+
         // --- Fields ---
         private Type currentComponentType;
         private Type rootComponentType;
@@ -65,6 +68,7 @@ namespace BTools.BComponentComparator.Editor
         private DropdownField inheritanceDropdown;
         private Button clearListButton;
         private SliderInt widthSlider;
+        private SliderInt rowCountSlider;
         private EnumField displayModeField;
 
         [MenuItem("Window/BTools/BComponentComparator")]
@@ -200,6 +204,26 @@ namespace BTools.BComponentComparator.Editor
             displayModeRow.Add(displayModeField);
 
             viewSettingsSection.Add(displayModeRow);
+
+            // Row count controls
+            var rowCountRow = new VisualElement();
+            rowCountRow.AddToClassList(widthControlRowClassName); // Reuse same style for now
+
+            var rowCountLabel = new Label("Row Count:");
+            rowCountLabel.AddToClassList(widthLabelClassName);
+            rowCountRow.Add(rowCountLabel);
+
+            rowCountSlider = new SliderInt(1, 5) { value = 1 };
+            rowCountSlider.AddToClassList(widthSliderClassName);
+            rowCountRow.Add(rowCountSlider);
+
+            rowCountSlider.RegisterValueChangedCallback(evt =>
+            {
+                rowCount = evt.newValue;
+                inspectorController?.SetRowCount(rowCount);
+            });
+
+            viewSettingsSection.Add(rowCountRow);
 
             // Column width controls - label and slider in one row
             var widthRow = new VisualElement();
@@ -562,6 +586,12 @@ namespace BTools.BComponentComparator.Editor
             {
                 widthSlider.SetValueWithoutNotify(inspectorWidth);
                 inspectorController?.SetColumnWidth(inspectorWidth);
+            }
+
+            if (rowCountSlider != null && rowCount != 1)
+            {
+                rowCountSlider.SetValueWithoutNotify(rowCount);
+                inspectorController?.SetRowCount(rowCount);
             }
 
             // Restore objects

@@ -182,5 +182,67 @@ namespace BTools.BComponentComparator.Editor.Tests
                 controller.RebuildColumns(null);
             });
         }
+
+        [Test]
+        public void SetRowCount_DistributesItemsToRows_Correctly()
+        {
+            // Arrange
+            // Prepare 4 test objects
+            var items = new List<ComparisonItem>();
+            var gameObjects = new List<GameObject>();
+            for (int i = 0; i < 4; i++)
+            {
+                var go = new GameObject($"TestObject{i}");
+                go.AddComponent<Rigidbody>();
+                gameObjects.Add(go);
+                items.Add(new ComparisonItem(go, typeof(Rigidbody)));
+            }
+
+            // Act
+            // Set to 2 Rows
+            controller.SetRowCount(2);
+            controller.RebuildColumns(items);
+
+            // Assert
+            // 1. Get main container
+            var container = scrollView.Q(className: "inspector-columns-container");
+            Assert.IsNotNull(container);
+
+            // 2. Verify Row count (Should be 2)
+            Assert.AreEqual(2, container.childCount, "Should create 2 row containers");
+
+            // 3. Verify Item distribution
+            // Expected logic (i % 2):
+            // Row 0: Index 0, 2
+            // Row 1: Index 1, 3
+            
+            var row0 = container.ElementAt(0);
+            var row1 = container.ElementAt(1);
+
+            Assert.AreEqual(2, row0.childCount, "Row 0 should have 2 items");
+            Assert.AreEqual(2, row1.childCount, "Row 1 should have 2 items");
+
+            // Verify Row 0 content (Item 0, Item 2)
+            var col0_0 = row0.ElementAt(0).Q<Label>(className: "inspector-column-header-label");
+            var col0_1 = row0.ElementAt(1).Q<Label>(className: "inspector-column-header-label");
+            Assert.AreEqual("TestObject0", col0_0.text);
+            Assert.AreEqual("TestObject2", col0_1.text);
+
+            // Verify Row 1 content (Item 1, Item 3)
+            var col1_0 = row1.ElementAt(0).Q<Label>(className: "inspector-column-header-label");
+            var col1_1 = row1.ElementAt(1).Q<Label>(className: "inspector-column-header-label");
+            Assert.AreEqual("TestObject1", col1_0.text);
+            Assert.AreEqual("TestObject3", col1_1.text);
+
+            // Cleanup
+            foreach (var item in items)
+            {
+                item.Dispose();
+            }
+            foreach (var go in gameObjects)
+            {
+                Object.DestroyImmediate(go);
+            }
+        }
     }
 }

@@ -18,6 +18,7 @@ Compare multiple Unity objects side-by-side with native Inspector editing.
 - Drag-and-drop workflow
 - Reorderable list with synchronized columns
 - Multi-selection support
+- Multi-Row Layout: Stack inspectors vertically to view more objects at once
 
 ## Supported Types
 
