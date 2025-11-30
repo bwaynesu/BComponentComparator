@@ -19,18 +19,23 @@ Ever found yourself:
 - Missing subtle differences in Material properties that break visual consistency?
 - Wishing you could see all your ScriptableObject data side-by-side?
 
-**Unity's Inspector shows one object at a time. Your workflow shouldn't be limited by that.**
+**Your workflow shouldn't be limited by that.**
 
-BComponentComparator gives you a parallel view of multiple Inspectors, letting you compare, edit, and synchronize objects effortlessly — saving hours of tedious clicking and ensuring nothing slips through the cracks.
+BComponentComparator gives you a parallel view of multiple Inspectors, letting you compare, edit, and synchronize objects effortlessly.
+
+**Ideal for:**
+- **Level Design**: Compare dozens of spawners to ensure consistent difficulty.
+- **Visual Consistency**: Line up Materials to verify shader parameters match.
+- **Data Management**: Review multiple ScriptableObject configs simultaneously.
+- **Bulk Editing**: Copy-paste values across objects in seconds.
 
 ## How It Works
 
-**Simple drag-and-drop workflow:**
-1. Drag any Component or asset to define what you want to compare
-2. Drag your objects into the list
-3. View and edit all Inspectors side-by-side with full Unity editing support
+**Two easy ways to start:**
+1. **Drag & Drop**: Drag a Component/Asset to define the type, then drag objects into the list.
+2. **Context Menu**: Right-click any Component in the Inspector and select "Add to Comparator".
 
-Native Inspector rendering means everything just works — Undo/Redo, Copy/Paste, Custom Inspectors, and all field types.
+View and edit all Inspectors side-by-side with full Unity editing support.
 
 <!-- https://github.com/user-attachments/assets/caa12751-699b-432d-bc69-6eb8385326be -->
 
@@ -59,31 +64,10 @@ Native Inspector rendering means everything just works — Undo/Redo, Copy/Paste
 - **Context Menu Integration**: Right-click any Component or asset in the Inspector and select "Add to Comparator" to quickly add it to the comparison list
   ![ContextMenu-optimize](https://github.com/user-attachments/assets/d70b77d9-2568-4fcf-8765-8ddbc0fb9e03)
 
-## Real-World Use Cases
+## Requirements
 
-### Level Design Quality Control
-Compare dozens of enemy spawners or interactive objects to ensure consistent difficulty curves and behavior settings across your game.
-
-### Visual Consistency
-Line up all your Materials side-by-side to verify shader parameters, texture assignments, and rendering settings match your art direction.
-
-### Data-Driven Development
-Review multiple ScriptableObject configurations simultaneously — perfect for balancing game items, character stats, or ability definitions.
-
-### Bulk Configuration
-Copy-paste Component values across multiple objects in seconds instead of minutes, then fine-tune individual differences with immediate visual feedback.
-
-### Advanced: Comparing Multiple Component Types
-Sometimes you need to compare different components on the same objects simultaneously (e.g., checking both `Transform` and `Collider` settings).
-
-1. Drag any component to the type field, then select **Component** from the "Use Type" dropdown (the base class for all components).
-2. Set **Row Count** to `2`.
-3. Drag the `Transform` and `Collider` from each object into the list.
-4. Arrange them so all Transforms are in the first row and Colliders in the second row.
-   
-Now you can inspect the position/rotation alongside the collider size for every object in a single view.
-
-![MultiRow-optimize](https://github.com/user-attachments/assets/334489b0-38b0-4014-b73f-836ba1a9e4a2)
+- Unity 2022.3 LTS or later
+- UI Toolkit support
 
 ## Installation
 
@@ -169,14 +153,17 @@ If an Inspector displays incorrectly or appears empty compared to Unity's defaul
 - Or hover over an Inspector column header to reveal the × button
 - Or click the "Clear List" button to remove all items at once
 
-## Supported Types
+### Advanced Workflow: Comparing Multiple Component Types
+Sometimes you need to compare different components on the same objects simultaneously (e.g., checking both `Transform` and `Collider` settings).
 
-- Almost any Unity object type that can be displayed in the Inspector
+1. Drag any component to the type field, then select **Component** from the "Use Type" dropdown (the base class for all components).
+2. Set **Row Count** to `2`.
+3. Drag the `Transform` and `Collider` from each object into the list.
+4. Arrange them so all Transforms are in the first row and Colliders in the second row.
+   
+Now you can inspect the position/rotation alongside the collider size for every object in a single view.
 
-## Requirements
-
-- Unity 2022.3 LTS or later
-- UI Toolkit support
+![MultiRow-optimize](https://github.com/user-attachments/assets/334489b0-38b0-4014-b73f-836ba1a9e4a2)
 
 ## Known Limitations
 
